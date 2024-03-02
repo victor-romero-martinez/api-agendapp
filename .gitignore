@@ -1,0 +1,4 @@
+node_modules
+models/local/dev.db
+pnpm-lock.yaml
+.env*
