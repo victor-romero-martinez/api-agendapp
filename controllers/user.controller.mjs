@@ -1,13 +1,17 @@
 //@ts-check
-import { User } from "../models/local/user.model.mjs";
+// import { User } from "../models/local/user.model.mjs";
 import { emailSchema, userSchema } from "../schemas/user.schema.mjs";
 import { cat } from "../utils/httpcat.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
 
 export class UserController {
-  static findAll = async (req, res) => {
+  constructor({ model }) {
+    this.model = model;
+  }
+
+  findAll = async (req, res) => {
     try {
-      const dbr = await User.findAll();
+      const dbr = await this.model.findAll();
       res.json(dbr);
     } catch (error) {
       logHelper("error ☠", error);
@@ -17,7 +21,7 @@ export class UserController {
     }
   };
 
-  static findOneByEmail = async (req, res) => {
+  findOneByEmail = async (req, res) => {
     const parse = emailSchema.safeParse(req.body);
 
     if (!parse.success) {
@@ -25,7 +29,7 @@ export class UserController {
     }
 
     try {
-      const dbr = await User.findOneByEmail(parse.data);
+      const dbr = await this.model.findOneByEmail(parse.data);
 
       if (!dbr) {
         return res
@@ -42,7 +46,7 @@ export class UserController {
     }
   };
 
-  static create = async (req, res) => {
+  create = async (req, res) => {
     const parse = await userSchema.safeParse(req.body);
 
     if (!parse.success) {
@@ -50,7 +54,7 @@ export class UserController {
     }
 
     // is already
-    const isAlreadyExist = await User.findOneByEmail(parse.data);
+    const isAlreadyExist = await this.model.findOneByEmail(parse.data);
     if (isAlreadyExist) {
       return res
         .status(cat["404_NOT_FOUND"])
@@ -58,7 +62,7 @@ export class UserController {
     }
 
     try {
-      const dbr = await User.create(parse.data);
+      const dbr = await this.model.create(parse.data);
       res.json(dbr);
     } catch (e) {
       logHelper("error ☠", e);

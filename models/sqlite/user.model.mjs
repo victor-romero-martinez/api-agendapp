@@ -1,10 +1,6 @@
 import { db } from "./database.local.mjs";
 
 export class User {
-  // constructor({ model }) {
-  //   this.model = model
-  // }
-
   static findAll = () => {
     return new Promise((resolve, reject) => {
       const sql = `SELECT * FROM users`;

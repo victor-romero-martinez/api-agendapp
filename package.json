@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "generate:local": "node models/local/generate-table.script.mjs",
-    "dev:local": "node --watch index.mjs"
+    "dev:sqlite3": "node --watch server-with-sqlite3.mjs"
   },
   "keywords": [],
   "author": "victordav147@gmail.com",

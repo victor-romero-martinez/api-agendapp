@@ -1,19 +1,24 @@
 import cookieParser from "cookie-parser";
 import "dotenv/config";
 import express from "express";
-import router from "./routes/routes.mjs";
+import { appRouter } from "./routes/routes.mjs";
 
-const app = express();
+/** App index
+ * @param {{ model: user}}
+ */
+export const createApp = ({ model }) => {
+  const app = express();
 
-const PORT = process.env.PORT ?? 3000;
-const VERSION = process.env.API_VERSION ?? "v1";
+  const PORT = process.env.PORT ?? 3000;
+  const VERSION = process.env.API_VERSION ?? "v1";
 
-app.disable("x-powered-by");
-app.use(express.json());
-app.use(cookieParser());
+  app.disable("x-powered-by");
+  app.use(express.json());
+  app.use(cookieParser());
 
-app.use(`/api/${VERSION}`, router);
+  app.use(`/api/${VERSION}`, appRouter({ model }));
 
-app.listen(PORT, () => {
-  console.log(`App running on: http://localhost:${PORT}`);
-});
+  app.listen(PORT, () => {});
+};
+
+/** @typedef {import('./models/sqlite/user.model.mjs').User} user */

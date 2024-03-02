@@ -2,10 +2,15 @@
 import { Router } from "express";
 import { UserController } from "../controllers/user.controller.mjs";
 
-const router = Router();
+/** App router */
+export const appRouter = ({ model }) => {
+  const router = Router();
 
-router.get("/user", UserController.findAll);
-router.post("/user", UserController.findOneByEmail);
-router.post("/register", UserController.create);
+  const controller = new UserController({ model });
 
-export default router;
+  router.get("/user", controller.findAll);
+  router.post("/user", controller.findOneByEmail);
+  router.post("/register", controller.create);
+
+  return router;
+};
