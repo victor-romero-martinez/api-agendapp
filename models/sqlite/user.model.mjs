@@ -1,7 +1,10 @@
+// @ts-check
 import { db } from "./database.local.mjs";
 
+/** User model SQLite */
 export class User {
-  static findAll = () => {
+  /** Get all user */
+  static findAll() {
     return new Promise((resolve, reject) => {
       const sql = `SELECT * FROM users`;
       db.all(sql, [], (err, rows) => {
@@ -12,11 +15,12 @@ export class User {
         }
       });
     });
-  };
+  }
 
-  static findOneByEmail = (data) => {
+  /** Get user by email */
+  static findOneByEmail(data) {
     return new Promise((res, rej) => {
-      const sql = `SELECT email FROM users WHERE email = ?`;
+      const sql = `SELECT * FROM users WHERE email = ?`;
       db.get(sql, [data.email], (err, rows) => {
         if (err) {
           rej(err);
@@ -25,9 +29,10 @@ export class User {
         }
       });
     });
-  };
+  }
 
-  static create = async (data) => {
+  /** Create a new user */
+  static create(data) {
     return new Promise((res, rej) => {
       const sql = `INSERT INTO users (password, email) VALUES (?, ?)`;
       db.run(sql, [data.password, data.email], (err) => {
@@ -38,5 +43,5 @@ export class User {
         }
       });
     });
-  };
+  }
 }

@@ -2,7 +2,9 @@
 import { Router } from "express";
 import { UserController } from "../controllers/user.controller.mjs";
 
-/** App router */
+/** App router
+ * @param {{ model: user }} param
+ */
 export const appRouter = ({ model }) => {
   const router = Router();
 
@@ -14,3 +16,5 @@ export const appRouter = ({ model }) => {
 
   return router;
 };
+
+/** @typedef {import('../models/sqlite/user.model.mjs').User} user */

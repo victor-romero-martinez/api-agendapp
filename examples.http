@@ -6,7 +6,7 @@ POST  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "email": "lot@abpa.fj"
+  "email": "asanum@cetu.mh"
 }
 
 ### create a user
@@ -14,6 +14,6 @@ POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "butos@herarra.is",
+  "email": "las@bahet.ky",
   "password": "123"
 }

@@ -1,16 +1,25 @@
-//@ts-check
-// import { User } from "../models/local/user.model.mjs";
+// @ts-check
 import { emailSchema, userSchema } from "../schemas/user.schema.mjs";
 import { cat } from "../utils/httpcat.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
 
+/** User controller */
 export class UserController {
+  /**
+   * @constructor
+   * @param {{ model: user }} param
+   */
   constructor({ model }) {
     this.model = model;
   }
 
+  /**
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * */
   findAll = async (req, res) => {
     try {
+      // @ts-ignore
       const dbr = await this.model.findAll();
       res.json(dbr);
     } catch (error) {
@@ -21,6 +30,10 @@ export class UserController {
     }
   };
 
+  /**
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * */
   findOneByEmail = async (req, res) => {
     const parse = emailSchema.safeParse(req.body);
 
@@ -29,6 +42,7 @@ export class UserController {
     }
 
     try {
+      // @ts-ignore
       const dbr = await this.model.findOneByEmail(parse.data);
 
       if (!dbr) {
@@ -46,6 +60,10 @@ export class UserController {
     }
   };
 
+  /**
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * */
   create = async (req, res) => {
     const parse = await userSchema.safeParse(req.body);
 
@@ -54,6 +72,7 @@ export class UserController {
     }
 
     // is already
+    // @ts-ignore
     const isAlreadyExist = await this.model.findOneByEmail(parse.data);
     if (isAlreadyExist) {
       return res
@@ -62,6 +81,7 @@ export class UserController {
     }
 
     try {
+      // @ts-ignore
       const dbr = await this.model.create(parse.data);
       res.json(dbr);
     } catch (e) {
@@ -72,3 +92,5 @@ export class UserController {
     }
   };
 }
+
+/** @typedef {import('../models/sqlite/user.model.mjs').User} user */

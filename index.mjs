@@ -1,10 +1,11 @@
+//@ts-check
 import cookieParser from "cookie-parser";
 import "dotenv/config";
 import express from "express";
 import { appRouter } from "./routes/routes.mjs";
 
 /** App index
- * @param {{ model: user}}
+ * @param {{ model: user }} param
  */
 export const createApp = ({ model }) => {
   const app = express();
