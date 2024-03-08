@@ -4,8 +4,8 @@
   "description": "Aplicación de agendas",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "generate:local": "node models/local/generate-table.script.mjs",
+    "test": "vitest --watch test/functional.test.mjs ",
+    "generate:local": "node models/sqlite/generate-table.script.mjs",
     "dev:sqlite3": "node --watch server-with-sqlite3.mjs"
   },
   "keywords": [],

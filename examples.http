@@ -1,4 +1,4 @@
-#  get all
+###  get all
 GET http://localhost:3000/api/v1/user
 
 ### find by email a user
@@ -6,14 +6,38 @@ POST  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "email": "asanum@cetu.mh"
+  "email": "redosub@zi.se"
 }
 
-### create a user
+### update a user only wid session [TOOD](test) testear con cambio de contraseña
+PATCH  http://localhost:3000/api/v1/user
+Content-Type: application/json
+
+{
+  "user_name": "redoseb"
+}
+
+### Delete a account
+DELETE http://localhost:3000/api/v1/user?id=11
+
+# AUTH
+### registerreate a user
 POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "las@bahet.ky",
-  "password": "123"
+  "email": "redosub@zi.se",
+  "password": "redosub"
 }
+
+### get session
+POST  http://localhost:3000/api/v1/signing
+Content-Type: application/json
+
+{
+  "email": "redosub@zi.se",
+  "password": "redosub"
+}
+
+### signout session
+GET http://localhost:3000/api/v1/signout

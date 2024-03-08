@@ -1,6 +1,6 @@
 import "dotenv/config";
 import sqlite3 from "sqlite3";
-import { logHelper } from "../../utils/log-helper.mjs";
+import { logHelper } from "../../../utils/log-helper.mjs";
 
 const DB_URL = process.env.DATABASE_URL;
 

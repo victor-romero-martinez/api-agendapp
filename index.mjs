@@ -2,6 +2,9 @@
 import cookieParser from "cookie-parser";
 import "dotenv/config";
 import express from "express";
+import swaggerUI from "swagger-ui-express";
+import { specs } from "./config/swagger.mjs";
+import { corsMiddleware } from "./middlewares/cors.middleware.mjs";
 import { appRouter } from "./routes/routes.mjs";
 
 /** App index
@@ -16,8 +19,10 @@ export const createApp = ({ model }) => {
   app.disable("x-powered-by");
   app.use(express.json());
   app.use(cookieParser());
+  app.use(corsMiddleware());
 
   app.use(`/api/${VERSION}`, appRouter({ model }));
+  app.use(`/api/${VERSION}/docs`, swaggerUI.serve, swaggerUI.setup(specs));
 
   app.listen(PORT, () => {});
 };

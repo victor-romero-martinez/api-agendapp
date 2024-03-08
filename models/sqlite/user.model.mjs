@@ -1,10 +1,10 @@
 // @ts-check
-import { db } from "./database.local.mjs";
+import { db } from "./config/database.local.mjs";
 
 /** User model SQLite */
 export class User {
   /** Get all user */
-  static findAll() {
+  static findAllUser() {
     return new Promise((resolve, reject) => {
       const sql = `SELECT * FROM users`;
       db.all(sql, [], (err, rows) => {
@@ -17,8 +17,10 @@ export class User {
     });
   }
 
-  /** Get user by email */
-  static findOneByEmail(data) {
+  /** Get user by email
+   * @param {TUser} data
+   */
+  static findUserByEmail(data) {
     return new Promise((res, rej) => {
       const sql = `SELECT * FROM users WHERE email = ?`;
       db.get(sql, [data.email], (err, rows) => {
@@ -31,17 +33,89 @@ export class User {
     });
   }
 
-  /** Create a new user */
-  static create(data) {
+  /** Create a new account
+   * @param {TUser} data
+   */
+  static createUser(data) {
     return new Promise((res, rej) => {
-      const sql = `INSERT INTO users (password, email) VALUES (?, ?)`;
-      db.run(sql, [data.password, data.email], (err) => {
+      const sql = `INSERT INTO users (email, password) VALUES(?, ?)`;
+      db.run(sql, [data.email, data.password], function (err) {
         if (err) {
           rej(err);
         } else {
-          res(data);
+          const id = this.lastID; // obtiene el ID de la fila insertada
+          const sql2 = `SELECT * FROM users WHERE id = ?`;
+          db.get(sql2, [id], (err, row) => {
+            if (err) {
+              rej(err);
+            } else {
+              res(row); // devuelve la fila insertada
+            }
+          });
+        }
+      });
+    });
+  }
+
+  /** Update a user
+   * @param {TUser} data
+   * @param {number} id
+   */
+  static updateUser(data, id) {
+    return new Promise((res, rej) => {
+      let placeholder = [];
+      let params = [];
+
+      for (const [key, value] of Object.entries(data)) {
+        placeholder.push(key + " = ? ");
+        params.push(value);
+      }
+
+      const sql = `UPDATE users SET ${placeholder} WHERE id = ?`;
+
+      db.run(sql, [...params, id], function (err) {
+        if (err) {
+          rej(err);
+        } else {
+          const sql2 = `SELECT * FROM users WHERE id = ?`;
+
+          db.get(sql2, [id], (err, row) => {
+            if (err) {
+              rej(err);
+            } else {
+              res(row);
+            }
+          });
+        }
+      });
+    });
+  }
+
+  /** Delete an account
+   * @param {TUser} data
+   */
+  static deleteUser(data) {
+    return new Promise((res, rej) => {
+      const sql = `DELETE FROM users WHERE id = ?`;
+      db.run(sql, [data.id], function (err) {
+        if (err) {
+          rej(err);
+        } else {
+          res({ message: `Deleted successfully id: ${data.id}` });
         }
       });
     });
   }
 }
+
+/**
+ * @typedef {{
+ * id?: number,
+ * email?: string,
+ * password?: string,
+ * user_name?: string,
+ * url_img?: string,
+ * token_email?: string,
+ * updated_at?: Date
+ * }} TUser
+ */
