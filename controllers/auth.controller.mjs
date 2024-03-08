@@ -38,7 +38,6 @@ export class AuthController {
     }
 
     // is already
-    // @ts-ignore
     const isAlreadyExist = await this.model.findUserByEmail(parse.data);
     if (isAlreadyExist) {
       return res
@@ -53,7 +52,6 @@ export class AuthController {
     };
 
     try {
-      // @ts-ignore
       const session = await this.model.createUser(newData);
 
       const token = jwtToken.sign(session, "2d");
@@ -83,11 +81,10 @@ export class AuthController {
     const parse = auth.safeParse(req.body);
 
     if (!parse.success) {
-      return res.status(cat["404_NOT_FOUND"]).json({ message: "Not Found" });
+      return res.status(cat["404_NOT_FOUND"]).json(parse.error.issues);
     }
 
     try {
-      // @ts-ignore
       const session = await this.model.findUserByEmail(parse.data);
       const isSamePassword = cipher.compare(
         parse.data.password,

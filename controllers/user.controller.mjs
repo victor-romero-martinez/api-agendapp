@@ -10,7 +10,7 @@ const SECRET = process.env.SECRET;
 const JWT_SECRET = process.env.JWT;
 
 if (!SECRET || !JWT_SECRET) {
-  throw Error("Missing secret.");
+  throw Error("Missing .env");
 }
 
 const cipher = new Cipher(SECRET);
@@ -32,7 +32,6 @@ export class UserController {
    * */
   findAll = async (req, res) => {
     try {
-      // @ts-ignore
       const dbr = await this.model.findAllUser();
       res.json(dbr);
     } catch (error) {
@@ -55,7 +54,6 @@ export class UserController {
     }
 
     try {
-      // @ts-ignore
       const dbr = await this.model.findUserByEmail(parse.data);
 
       if (!dbr) {
@@ -78,15 +76,14 @@ export class UserController {
    * @param {import('express').Response} res
    */
   update = async (req, res) => {
-    /**
-     *  @type {TToken}*/
+    /** @type {TToken}*/
     // @ts-ignore
     const token = req.decode;
 
     if (!token.email) {
       return res
         .status(cat["404_NOT_FOUND"])
-        .json({ message: "404 Not Found" });
+        .json({ error: "Missing user email" });
     }
 
     const parse = userUpdatableSchema.safeParse(req.body);
@@ -95,7 +92,6 @@ export class UserController {
       return res.status(cat["400_BAD_REQUEST"]).json(parse.error.issues);
     }
 
-    // @ts-ignore
     const targetToUpdate = await this.model.findUserByEmail(token);
 
     if (!targetToUpdate) {
@@ -117,6 +113,7 @@ export class UserController {
         targetToUpdate.password,
         parse.data.password
       );
+      console.log("isAuthorized: ", isAuthorized);
 
       if (!isAuthorized) {
         return res
@@ -133,7 +130,6 @@ export class UserController {
       }
 
       try {
-        // @ts-ignore
         const dbr = await this.model.updateUser(newData, targetToUpdate.id);
         const token = jwtToken.sign(dbr, "2d");
 
@@ -153,7 +149,6 @@ export class UserController {
       }
     } else {
       try {
-        // @ts-ignore
         const dbr = await this.model.updateUser(newData, targetToUpdate.id);
         const token = jwtToken.sign(dbr, "2d");
 
@@ -167,7 +162,9 @@ export class UserController {
           .json(dbr);
       } catch (error) {
         logHelper("error ☠", error);
-        res.status(cat["500_INTERNAL_SERVER_ERROR"]).json({ error });
+        res
+          .status(cat["500_INTERNAL_SERVER_ERROR"])
+          .json({ error: "Internal Server Error" });
       }
     }
   };
@@ -181,19 +178,17 @@ export class UserController {
      *  @type {TToken} */
     // @ts-ignore
     const token = req.decode;
-    const { id } = req.query;
+    const id = +req.query;
 
-    if (!id) {
-      return res.status(cat["400_BAD_REQUEST"]).json({ error: "Bad Request" });
+    if (!id || !token.role) {
+      return res.status(cat["404_NOT_FOUND"]).json({ error: "Not found" });
     }
 
     if (token.role.includes("admin")) {
-      // @ts-ignore
       const dbr = await this.model.deleteUser({ id });
       res.json(dbr);
     } else {
       try {
-        // @ts-ignore
         const findEmail = await this.model.findUserByEmail(token);
 
         if (!findEmail) {
@@ -202,7 +197,6 @@ export class UserController {
             .json({ error: "User not found." });
         }
 
-        // @ts-ignore
         const dbr = await this.model.deleteUser(findEmail);
         res.cookie("token", "", { expires: new Date(0) }).json(dbr);
       } catch (error) {

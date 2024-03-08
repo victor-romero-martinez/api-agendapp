@@ -4,7 +4,7 @@ import { db } from "./config/database.local.mjs";
 /** User model SQLite */
 export class User {
   /** Get all user */
-  static findAllUser() {
+  findAllUser() {
     return new Promise((resolve, reject) => {
       const sql = `SELECT * FROM users`;
       db.all(sql, [], (err, rows) => {
@@ -20,7 +20,7 @@ export class User {
   /** Get user by email
    * @param {TUser} data
    */
-  static findUserByEmail(data) {
+  findUserByEmail(data) {
     return new Promise((res, rej) => {
       const sql = `SELECT * FROM users WHERE email = ?`;
       db.get(sql, [data.email], (err, rows) => {
@@ -36,7 +36,7 @@ export class User {
   /** Create a new account
    * @param {TUser} data
    */
-  static createUser(data) {
+  createUser(data) {
     return new Promise((res, rej) => {
       const sql = `INSERT INTO users (email, password) VALUES(?, ?)`;
       db.run(sql, [data.email, data.password], function (err) {
@@ -61,7 +61,7 @@ export class User {
    * @param {TUser} data
    * @param {number} id
    */
-  static updateUser(data, id) {
+  updateUser(data, id) {
     return new Promise((res, rej) => {
       let placeholder = [];
       let params = [];
@@ -94,7 +94,7 @@ export class User {
   /** Delete an account
    * @param {TUser} data
    */
-  static deleteUser(data) {
+  deleteUser(data) {
     return new Promise((res, rej) => {
       const sql = `DELETE FROM users WHERE id = ?`;
       db.run(sql, [data.id], function (err) {
@@ -116,6 +116,6 @@ export class User {
  * user_name?: string,
  * url_img?: string,
  * token_email?: string,
- * updated_at?: Date
+ * updated_at?: string|Date
  * }} TUser
  */
