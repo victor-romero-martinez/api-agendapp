@@ -1,4 +1,4 @@
 node_modules
-models/local/dev.db
+models/sqlite/dev.db
 pnpm-lock.yaml
 .env*
