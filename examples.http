@@ -9,12 +9,13 @@ Content-Type: application/json
   "email": "redosub@zi.se"
 }
 
-### update a user only wid session [TOOD](test) testear con cambio de contraseña
+### update a user only wid session
 PATCH  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "user_name": "redoseb"
+  "user_name": "Votuce",
+  "url_img": "https://doodleipsum.com/700?i=33a195c3642aacda0dd669047297755c"
 }
 
 ### Delete a account
@@ -26,8 +27,8 @@ POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "redosub@zi.se",
-  "password": "redosub"
+  "email": "votuce@rupavaz.bf",
+  "password": "123456"
 }
 
 ### get session
@@ -35,8 +36,8 @@ POST  http://localhost:3000/api/v1/signing
 Content-Type: application/json
 
 {
-  "email": "redosub@zi.se",
-  "password": "redosub"
+  "email": "votuce@rupavaz.bf",
+  "password": "votuce"
 }
 
 ### signout session

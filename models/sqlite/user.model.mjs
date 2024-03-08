@@ -67,12 +67,11 @@ export class User {
       let params = [];
 
       for (const [key, value] of Object.entries(data)) {
-        placeholder.push(key + " = ? ");
+        placeholder.push(key + " = ?");
         params.push(value);
       }
 
       const sql = `UPDATE users SET ${placeholder} WHERE id = ?`;
-
       db.run(sql, [...params, id], function (err) {
         if (err) {
           rej(err);

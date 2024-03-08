@@ -97,23 +97,23 @@ export class UserController {
     if (!targetToUpdate) {
       return res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
-        .json({ error: "Failed to update user”" });
+        .json({ error: "Failed to update user" });
     }
 
     let updateDate = new Date().toISOString();
     let updateDateAdapter = updateDate.replace("T", " ").slice(0, -5);
+    const { new_password, password, ...updateData } = parse.data;
     /** new data */
     const newData = {
-      ...parse.data,
+      ...updateData,
       updated_at: updateDateAdapter,
     };
 
     if (parse.data.new_password && parse.data.password) {
       const isAuthorized = cipher.compare(
-        targetToUpdate.password,
-        parse.data.password
+        parse.data.password,
+        targetToUpdate.password
       );
-      console.log("isAuthorized: ", isAuthorized);
 
       if (!isAuthorized) {
         return res
@@ -126,11 +126,16 @@ export class UserController {
       if (!newPassword) {
         return res
           .status(cat["500_INTERNAL_SERVER_ERROR"])
-          .json({ error: "Internal Serve Error" });
+          .json({ error: "Failed to update user" });
       }
 
       try {
-        const dbr = await this.model.updateUser(newData, targetToUpdate.id);
+        const dataFix = {
+          ...newData,
+          password: newPassword,
+        };
+
+        const dbr = await this.model.updateUser(dataFix, targetToUpdate.id);
         const token = jwtToken.sign(dbr, "2d");
 
         res
