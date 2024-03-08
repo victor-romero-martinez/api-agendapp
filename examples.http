@@ -14,8 +14,7 @@ PATCH  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "user_name": "Votuce",
-  "url_img": "https://doodleipsum.com/700?i=33a195c3642aacda0dd669047297755c"
+  "user_name": "votuce"
 }
 
 ### Delete a account

@@ -6,6 +6,18 @@
  *      allOf:
  *        - $ref: '#/components/UserEditable'
  *        - $ref: '#/components/UserNoEditable'
+ *    Auth:
+ *      type: object
+ *      required:
+ *        - email
+ *        - password
+ *      properties:
+ *        email:
+ *          type: string
+ *          format: email
+ *        password:
+ *          type: string
+ *          format: password
  *  UserEditable:
  *    type: object
  *    properties:
@@ -117,6 +129,41 @@ export const appRouter = ({ model }) => {
   router.patch("/user", jwtMiddleware, userController.update);
   router.delete("/user", jwtMiddleware, userController.delete);
 
+  /**
+   * @swagger
+   * /register:
+   *  post:
+   *    summery: Register an account
+   *    tags: [Auth]
+   *    produce:
+   *      - application/json
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            type: object
+   *            properties:
+   *              email:
+   *                type: string
+   *                format: email
+   *              password:
+   *                type: string
+   *    responses:
+   *      201:
+   *        description: Response with new user
+   *        content:
+   *          schema:
+   *            type: object
+   *            items:
+   *              - $ref: '#/components/schemas/User'
+   *      400:
+   *        description: Email is already exist
+   *      404:
+   *        description: Not Found
+   *      500:
+   *        description: Internal Server Error.
+   */
   router.post("/register", authController.register);
   router.post("/signing", authController.signing);
   router.get("/signout", authController.signout);

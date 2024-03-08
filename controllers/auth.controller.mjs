@@ -41,7 +41,7 @@ export class AuthController {
     const isAlreadyExist = await this.model.findUserByEmail(parse.data);
     if (isAlreadyExist) {
       return res
-        .status(cat["404_NOT_FOUND"])
+        .status(cat["400_BAD_REQUEST"])
         .json({ message: "Email is already exist" });
     }
 
