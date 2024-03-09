@@ -183,14 +183,16 @@ export class UserController {
      *  @type {TToken} */
     // @ts-ignore
     const token = req.decode;
-    const id = +req.query;
+    const { id } = req.query;
 
     if (!id || !token.role) {
       return res.status(cat["404_NOT_FOUND"]).json({ error: "Not found" });
     }
 
     if (token.role.includes("admin")) {
-      const dbr = await this.model.deleteUser({ id });
+      const newId = { id: +id };
+
+      const dbr = await this.model.deleteUser(newId);
       res.json(dbr);
     } else {
       try {
