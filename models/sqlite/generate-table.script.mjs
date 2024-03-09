@@ -25,7 +25,7 @@ function generate() {
       status      TEXT NOT NULL DEFAULT pending,
       author_id   INTEGER NOT NULL,
       created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
-      due_date    DATE NOT NULL,
+      due_date    DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (author_id) REFERENCES users (id)
     )`;
 
