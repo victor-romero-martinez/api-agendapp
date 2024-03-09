@@ -24,9 +24,6 @@
  *      email:
  *        type: string
  *        format: email
- *      password:
- *        type: string
- *        format: password
  *      user_name:
  *        type: string
  *        format: name
@@ -49,9 +46,6 @@
  *        type: string
  *        format: bolean
  *        default: false
- *      token_email:
- *        type: string
- *        format: uuid
  *      updated_ad:
  *        type: string
  *        format: date

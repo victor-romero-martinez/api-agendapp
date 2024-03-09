@@ -1,12 +1,30 @@
 // @ts-check
 import { db } from "./config/database.local.mjs";
 
+const fieldsDB = [
+  "id",
+  "email",
+  "user_name",
+  "url_img",
+  "role",
+  "active",
+  "verified",
+  "created_at",
+  "updated_at",
+];
+/** fields fn query */
+function sqlPlaceholder() {
+  let sqlStr = "";
+  fieldsDB.forEach((f) => (sqlStr += `${f}, `));
+  return sqlStr.slice(0, -2);
+}
+
 /** User model SQLite */
 export class User {
   /** Get all user */
   findAllUser() {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT * FROM users`;
+      const sql = `SELECT ${sqlPlaceholder()} FROM users`;
       db.all(sql, [], (err, rows) => {
         if (err) {
           reject(err);
@@ -22,7 +40,7 @@ export class User {
    */
   findUserByEmail(data) {
     return new Promise((res, rej) => {
-      const sql = `SELECT * FROM users WHERE email = ?`;
+      const sql = `SELECT ${sqlPlaceholder()} FROM users WHERE email = ?`;
       db.get(sql, [data.email], (err, rows) => {
         if (err) {
           rej(err);
@@ -44,7 +62,7 @@ export class User {
           rej(err);
         } else {
           const id = this.lastID; // obtiene el ID de la fila insertada
-          const sql2 = `SELECT * FROM users WHERE id = ?`;
+          const sql2 = `SELECT ${sqlPlaceholder()} FROM users WHERE id = ?`;
           db.get(sql2, [id], (err, row) => {
             if (err) {
               rej(err);
@@ -76,7 +94,7 @@ export class User {
         if (err) {
           rej(err);
         } else {
-          const sql2 = `SELECT * FROM users WHERE id = ?`;
+          const sql2 = `SELECT ${sqlPlaceholder()} FROM users WHERE id = ?`;
 
           db.get(sql2, [id], (err, row) => {
             if (err) {
