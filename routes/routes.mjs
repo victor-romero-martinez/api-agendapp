@@ -60,13 +60,13 @@ import { AuthController } from "../controllers/auth.controller.mjs";
 import jwtMiddleware from "../middlewares/jwt.middleware.mjs";
 
 /** App router
- * @param {{ model: user }} param
+ * @param {{ userModel: user }} param
  */
-export const appRouter = ({ model }) => {
+export const appRouter = ({ userModel }) => {
   const router = Router();
 
-  const authController = new AuthController({ model });
-  const userController = new UserController({ model });
+  const authController = new AuthController({ userModel });
+  const userController = new UserController({ userModel });
 
   /**
    * @swagger

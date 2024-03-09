@@ -20,10 +20,10 @@ const jwtToken = new JwtToken(JWT_SECRET);
 export class UserController {
   /**
    * @constructor
-   * @param {{ model: TUser }} param
+   * @param {{ userModel: TUser }} param
    */
-  constructor({ model }) {
-    this.model = model;
+  constructor({ userModel }) {
+    this.userModel = userModel;
   }
 
   /**
@@ -32,7 +32,7 @@ export class UserController {
    * */
   findAll = async (req, res) => {
     try {
-      const dbr = await this.model.findAllUser();
+      const dbr = await this.userModel.findAllUser();
       res.json(dbr);
     } catch (error) {
       logHelper("error ☠", error);
@@ -54,7 +54,7 @@ export class UserController {
     }
 
     try {
-      const dbr = await this.model.findUserByEmail(parse.data);
+      const dbr = await this.userModel.findUserByEmail(parse.data);
 
       if (!dbr) {
         return res
@@ -92,7 +92,7 @@ export class UserController {
       return res.status(cat["400_BAD_REQUEST"]).json(parse.error.issues);
     }
 
-    const targetToUpdate = await this.model.findUserByEmail(token);
+    const targetToUpdate = await this.userModel.findUserByEmail(token);
 
     if (!targetToUpdate) {
       return res
@@ -135,7 +135,7 @@ export class UserController {
           password: newPassword,
         };
 
-        const dbr = await this.model.updateUser(dataFix, targetToUpdate.id);
+        const dbr = await this.userModel.updateUser(dataFix, targetToUpdate.id);
         const token = jwtToken.sign(dbr, "2d");
 
         res
@@ -154,7 +154,7 @@ export class UserController {
       }
     } else {
       try {
-        const dbr = await this.model.updateUser(newData, targetToUpdate.id);
+        const dbr = await this.userModel.updateUser(newData, targetToUpdate.id);
         const token = jwtToken.sign(dbr, "2d");
 
         res
@@ -192,11 +192,11 @@ export class UserController {
     if (token.role.includes("admin")) {
       const newId = { id: +id };
 
-      const dbr = await this.model.deleteUser(newId);
+      const dbr = await this.userModel.deleteUser(newId);
       res.json(dbr);
     } else {
       try {
-        const findEmail = await this.model.findUserByEmail(token);
+        const findEmail = await this.userModel.findUserByEmail(token);
 
         if (!findEmail) {
           return res
@@ -204,7 +204,7 @@ export class UserController {
             .json({ error: "User not found." });
         }
 
-        const dbr = await this.model.deleteUser(findEmail);
+        const dbr = await this.userModel.deleteUser(findEmail);
         res.cookie("token", "", { expires: new Date(0) }).json(dbr);
       } catch (error) {
         logHelper("error ☠", error);

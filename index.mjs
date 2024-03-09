@@ -8,9 +8,9 @@ import { corsMiddleware } from "./middlewares/cors.middleware.mjs";
 import { appRouter } from "./routes/routes.mjs";
 
 /** App index
- * @param {{ model: user }} param
+ * @param {{ userModel: user }} param
  */
-export const createApp = ({ model }) => {
+export const createApp = ({ userModel }) => {
   const app = express();
 
   const PORT = process.env.PORT ?? 3000;
@@ -21,7 +21,7 @@ export const createApp = ({ model }) => {
   app.use(cookieParser());
   app.use(corsMiddleware());
 
-  app.use(`/api/${VERSION}`, appRouter({ model }));
+  app.use(`/api/${VERSION}`, appRouter({ userModel }));
   app.use(`/api/${VERSION}/docs`, swaggerUI.serve, swaggerUI.setup(specs));
 
   app.listen(PORT, () => {});

@@ -20,10 +20,10 @@ const jwtToken = new JwtToken(JWT_SECRET);
 export class AuthController {
   /**
    * @constructor
-   * @param {{ model: TUser }} param
+   * @param {{ userModel: TUser }} param
    */
-  constructor({ model }) {
-    this.model = model;
+  constructor({ userModel }) {
+    this.userModel = userModel;
   }
 
   /** Singing up
@@ -38,7 +38,7 @@ export class AuthController {
     }
 
     // is already
-    const isAlreadyExist = await this.model.findUserByEmail(parse.data);
+    const isAlreadyExist = await this.userModel.findUserByEmail(parse.data);
     if (isAlreadyExist) {
       return res
         .status(cat["400_BAD_REQUEST"])
@@ -52,7 +52,7 @@ export class AuthController {
     };
 
     try {
-      const session = await this.model.createUser(newData);
+      const session = await this.userModel.createUser(newData);
 
       const token = jwtToken.sign(session, "2d");
 
@@ -85,7 +85,7 @@ export class AuthController {
     }
 
     try {
-      const session = await this.model.findUserByEmail(parse.data);
+      const session = await this.userModel.findUserByEmail(parse.data);
       const isSamePassword = cipher.compare(
         parse.data.password,
         session?.password
