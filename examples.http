@@ -17,7 +17,7 @@ Content-Type: application/json
   "user_name": "votuce"
 }
 
-### Delete a account
+### Disable profile [TODO] disable instead of delete
 DELETE http://localhost:3000/api/v1/user?id=11
 
 # AUTH
