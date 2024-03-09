@@ -4,7 +4,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 
 const PORT = process.env.PORT ?? 3000;
 const VERSION = process.env.API_VERSION ?? "v1";
-const PATH = process.env.URL_PATH ?? "http://localhost";
+const PATH = process.env.URL_BASE ?? "http://localhost";
 
 /** Swagger options
  * @type {Swagger}
