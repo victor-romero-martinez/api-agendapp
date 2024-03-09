@@ -86,10 +86,11 @@ export const appRouter = ({ model }) => {
    *      200:
    *        description: Response with all user
    *        content:
-   *          schema:
-   *            type: array
-   *            items:
-   *              $ref: '#/components/schemas/User'
+   *          application/json:
+   *            schema:
+   *              type: array
+   *              items:
+   *                $ref: '#/components/schemas/User'
    *      500:
    *        description: Internal Server Error.
    */
@@ -116,9 +117,8 @@ export const appRouter = ({ model }) => {
    *      200:
    *        description: Response a user.
    *        content:
-   *          schema:
-   *            type: object
-   *            items:
+   *          application/json:
+   *            schema:
    *              $ref: '#/components/schemas/User'
    *      404:
    *        description: User does not exists.
@@ -126,16 +126,78 @@ export const appRouter = ({ model }) => {
    *        description: Internal Server Error.
    */
   router.post("/user", userController.getByEmail);
+  /**
+   * @swagger
+   * /user:
+   *  patch:
+   *    summary: Update a profile
+   *    tags: [User]
+   *    produces:
+   *      - application/json
+   *    security:
+   *      - cookieAuth: []
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/UserEditable'
+   *    responses:
+   *      200:
+   *        description: Response with user Updated.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/User'
+   *      400:
+   *        description: Bad Request.
+   *      404:
+   *        description: Missing user email.
+   *      500:
+   *        description: Internal Server Error.
+   */
   router.patch("/user", jwtMiddleware, userController.update);
+  /**
+   * @swagger
+   * /user:
+   *  delete:
+   *    summary: Disable profile [TODO] disable instead of delete
+   *    tags: [User]
+   *    produces:
+   *      - application/json
+   *    security:
+   *      - cookieAuth: []
+   *    parameters:
+   *      - in: query
+   *        name: id
+   *        schema:
+   *          type: string
+   *          format: number
+   *          description: Id of profile
+   *    responses:
+   *      200:
+   *        description: Response profile disable.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                message:
+   *                  type: string
+   *      404:
+   *        description: User not found.
+   *      500:
+   *        description: Internal Sever Error.
+   */
   router.delete("/user", jwtMiddleware, userController.delete);
 
   /**
    * @swagger
    * /register:
    *  post:
-   *    summery: Register an account
+   *    summary: Register an account
    *    tags: [Auth]
-   *    produce:
+   *    produces:
    *      - application/json
    *    requestBody:
    *      required: true
@@ -153,10 +215,9 @@ export const appRouter = ({ model }) => {
    *      201:
    *        description: Response with new user
    *        content:
-   *          schema:
-   *            type: object
-   *            items:
-   *              - $ref: '#/components/schemas/User'
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/User'
    *      400:
    *        description: Email is already exist
    *      404:
@@ -165,7 +226,51 @@ export const appRouter = ({ model }) => {
    *        description: Internal Server Error.
    */
   router.post("/register", authController.register);
+  /**
+   * @swagger
+   * /signing:
+   *  post:
+   *    summary: Signing to get auth
+   *    tags: [Auth]
+   *    produces:
+   *      - application/json
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            type: object
+   *            properties:
+   *              email:
+   *                type: string
+   *                format: email
+   *              password:
+   *                type: string
+   *    responses:
+   *      200:
+   *        description: Get session auth
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/User'
+   *      404:
+   *        description: Not Found
+   *      401:
+   *        description: Incorrect password or email
+   *      500:
+   *        description: Internal Server Error
+   */
   router.post("/signing", authController.signing);
+  /**
+   * @swagger
+   * /signout:
+   *  get:
+   *    summary: Close session
+   *    tags: [Auth]
+   *    responses:
+   *      200:
+   *        description: Successfully
+   */
   router.get("/signout", authController.signout);
 
   return router;
