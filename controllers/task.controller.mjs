@@ -33,10 +33,8 @@ export class TaskController {
    * */
   getByAuthor = async (req, res) => {
     const id = +req.params.id;
-    console.log("id: sss", id);
 
-    if (id == Number) {
-      console.log("id: ", id);
+    if (isNaN(id)) {
       return res
         .status(cat["400_BAD_REQUEST"])
         .json({ error: "Should be a number" });
