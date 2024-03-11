@@ -2,9 +2,10 @@
 import "dotenv/config";
 import { emailSchema, userUpdatableSchema } from "../schemas/user.schema.mjs";
 import { Cipher } from "../utils/cipher.mjs";
+import { dateFormatter } from "../utils/dateFormatter.mjs";
 import { cat } from "../utils/httpcat.mjs";
-import { logHelper } from "../utils/log-helper.mjs";
 import { JwtToken } from "../utils/jwtToken.mjs";
+import { logHelper } from "../utils/log-helper.mjs";
 
 const SECRET = process.env.SECRET;
 const JWT_SECRET = process.env.JWT;
@@ -100,13 +101,11 @@ export class UserController {
         .json({ error: "Failed to update user" });
     }
 
-    let updateDate = new Date().toISOString();
-    let updateDateAdapter = updateDate.replace("T", " ").slice(0, -5);
     const { new_password, password, ...updateData } = parse.data;
     /** new data */
     const newData = {
       ...updateData,
-      updated_at: updateDateAdapter,
+      updated_at: dateFormatter(),
     };
 
     if (parse.data.new_password && parse.data.password) {

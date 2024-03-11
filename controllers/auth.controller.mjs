@@ -5,6 +5,7 @@ import { Cipher } from "../utils/cipher.mjs";
 import { cat } from "../utils/httpcat.mjs";
 import { JwtToken } from "../utils/jwtToken.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
+import { dateFormatter } from "../utils/dateFormatter.mjs";
 
 const SECRET = process.env.SECRET;
 const JWT_SECRET = process.env.JWT;
@@ -39,7 +40,26 @@ export class AuthController {
 
     // is already
     const isAlreadyExist = await this.userModel.findUserByEmail(parse.data);
-    if (isAlreadyExist) {
+    if (isAlreadyExist.active === 0) {
+      const dbr = await this.userModel.updateUser(
+        {
+          active: true,
+          updated_at: dateFormatter(),
+        },
+        isAlreadyExist.id
+      );
+
+      const token = jwtToken.sign(dbr, "2d");
+
+      return res
+        .cookie("token", token, {
+          maxAge: 172800000,
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict",
+        })
+        .json(dbr);
+    } else if (isAlreadyExist) {
       return res
         .status(cat["400_BAD_REQUEST"])
         .json({ message: "Email is already exist" });

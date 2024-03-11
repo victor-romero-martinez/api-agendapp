@@ -113,12 +113,13 @@ export class User {
    */
   deleteUser(data) {
     return new Promise((res, rej) => {
-      const sql = `DELETE FROM users WHERE id = ?`;
+      // const sql = `DELETE FROM users WHERE id = ?`;
+      const sql = `UPDATE users SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
       db.run(sql, [data.id], function (err) {
         if (err) {
           rej(err);
         } else {
-          res({ message: `Deleted successfully id: ${data.id}` });
+          res({ message: `Disable successfully id: ${data.id}` });
         }
       });
     });
@@ -132,6 +133,7 @@ export class User {
  * password?: string,
  * user_name?: string,
  * url_img?: string,
+ * active?: boolean,
  * token_email?: string,
  * updated_at?: string|Date
  * }} TUser
