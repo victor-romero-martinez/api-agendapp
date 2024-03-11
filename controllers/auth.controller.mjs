@@ -40,7 +40,7 @@ export class AuthController {
 
     // is already
     const isAlreadyExist = await this.userModel.findUserByEmail(parse.data);
-    if (isAlreadyExist.active === 0) {
+    if (isAlreadyExist?.active === 0) {
       const dbr = await this.userModel.updateUser(
         {
           active: true,
