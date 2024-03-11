@@ -23,6 +23,7 @@ function generate() {
       title       TEXT NOT NULL CHECK(length(title) >= 3 AND length(title) <= 60),
       description TEXT CHECK(length(description) <= 250),
       status      TEXT NOT NULL DEFAULT pending,
+      priority    NUMBER NOT NULL DEFAULT 1,
       author_id   INTEGER NOT NULL,
       updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
       created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,

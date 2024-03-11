@@ -6,7 +6,7 @@ POST  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "email": "redosub@zi.se"
+  "email": "votuce@rupavaz.bf"
 }
 
 ### update a user only wid session
@@ -14,20 +14,20 @@ PATCH  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "user_name": "votuce"
+  "user_name": "fuipo"
 }
 
 ### Disable profile
 DELETE http://localhost:3000/api/v1/user?id=11
-
+-----------------------------------------------------------------
 # AUTH
 ### registerreate a user
 POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "votuce@rupavaz.bf",
-  "password": "123456"
+  "email": "ihadaufi@uf.bv",
+  "password": "ihadaufi"
 }
 
 ### get session
@@ -35,16 +35,25 @@ POST  http://localhost:3000/api/v1/signing
 Content-Type: application/json
 
 {
-  "email": "votuce@rupavaz.bf",
-  "password": "votuce"
+  "email": "fuipo@epode.pn",
+  "password": "fuipo"
 }
 
 ### signout session
 GET http://localhost:3000/api/v1/signout
-
+-----------------------------------------------------------------
 ### TASKS
 # get all tasks
 GET http://localhost:3000/api/v1/task
 
 ### get tasks by author id
 GET http://localhost:3000/api/v1/task/1
+
+### create a new task
+POST  http://localhost:3000/api/v1/task
+Content-Type: application/json
+
+{
+  "title": "prueba",
+  "description": "de fuergo"
+}

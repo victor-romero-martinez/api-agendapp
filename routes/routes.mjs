@@ -276,6 +276,7 @@ export const appRouter = ({ userModel, taskModel }) => {
   // TASKS
   router.get("/task/:id", taskController.getByAuthor);
   router.get("/task", taskController.getAll);
+  router.post("/task", jwtMiddleware, taskController.createTask);
 
   return router;
 };
