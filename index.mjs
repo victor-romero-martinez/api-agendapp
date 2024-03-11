@@ -8,9 +8,12 @@ import { corsMiddleware } from "./middlewares/cors.middleware.mjs";
 import { appRouter } from "./routes/routes.mjs";
 
 /** App index
- * @param {{ userModel: user }} param
+ * @param {{
+ * userModel: import('./models/sqlite/user.model.mjs').User,
+ * taskModel: import('./models/sqlite/tasks.model.mjs').Task
+ * }} param
  */
-export const createApp = ({ userModel }) => {
+export const createApp = ({ userModel, taskModel }) => {
   const app = express();
 
   const PORT = process.env.PORT ?? 3000;
@@ -21,10 +24,8 @@ export const createApp = ({ userModel }) => {
   app.use(cookieParser());
   app.use(corsMiddleware());
 
-  app.use(`/api/${VERSION}`, appRouter({ userModel }));
+  app.use(`/api/${VERSION}`, appRouter({ userModel, taskModel }));
   app.use(`/api/${VERSION}/docs`, swaggerUI.serve, swaggerUI.setup(specs));
 
   app.listen(PORT, () => {});
 };
-
-/** @typedef {import('./models/sqlite/user.model.mjs').User} user */
