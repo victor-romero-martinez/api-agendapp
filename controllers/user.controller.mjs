@@ -65,7 +65,7 @@ export class UserController {
 
       res.json(dbr);
     } catch (e) {
-      logHelper("error ☠");
+      logHelper("error ☠", e);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error" });
