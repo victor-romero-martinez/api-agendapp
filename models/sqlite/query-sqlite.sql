@@ -1,6 +1,7 @@
 -- SELECT * FROM users;
--- DELETE FROM users WHERE id = 3;
+-- DELETE FROM users WHERE id = 1 ;
 -- SELECT  id, email, user_name, url_img, role, active, verified, created_at, updated_at FROM users;
 -- INSERT INTO tasks (title, description, author_id) VALUES ("test", "probando tasks", 1);
 -- SELECT * FROM tasks;
-SELECT * FROM tasks WHERE id = 1;
+-- SELECT * FROM tasks WHERE id = 1;
+-- SELECT users.email, tasks.* FROM users JOIN tasks ON users.id = 1
