@@ -1,7 +1,7 @@
 // @ts-check
 import { db } from "./config/database.local.mjs";
 
-/** Table user */
+/** Name of the table */
 const TABLE = "users";
 
 /** fields query */
