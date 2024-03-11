@@ -2,9 +2,9 @@
 import { db } from "./config/database.local.mjs";
 
 /** Name of the table */
-const TABLE = "users";
+export const USER_TABLE = "users";
 
-/** fields query */
+/** fields query returns */
 const fieldsDB = [
   "id",
   "email",
@@ -16,7 +16,7 @@ const fieldsDB = [
   "created_at",
   "updated_at",
 ];
-/** fields fn query */
+/** fields fn query returns */
 function sqlPlaceholder() {
   let sqlStr = "";
   fieldsDB.forEach((f) => (sqlStr += `${f}, `));
@@ -28,7 +28,7 @@ export class User {
   /** Get all user */
   findAllUser() {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT ${sqlPlaceholder()} FROM ${TABLE}`;
+      const sql = `SELECT ${sqlPlaceholder()} FROM ${USER_TABLE}`;
       db.all(sql, [], (err, rows) => {
         if (err) {
           reject(err);
@@ -44,7 +44,7 @@ export class User {
    */
   findUserByEmail(data) {
     return new Promise((res, rej) => {
-      const sql = `SELECT ${sqlPlaceholder()} FROM ${TABLE} WHERE email = ?`;
+      const sql = `SELECT ${sqlPlaceholder()} FROM ${USER_TABLE} WHERE email = ?`;
       db.get(sql, [data.email], (err, rows) => {
         if (err) {
           rej(err);
@@ -60,13 +60,13 @@ export class User {
    */
   createUser(data) {
     return new Promise((res, rej) => {
-      const sql = `INSERT INTO ${TABLE} (email, password) VALUES(?, ?)`;
+      const sql = `INSERT INTO ${USER_TABLE} (email, password) VALUES(?, ?)`;
       db.run(sql, [data.email, data.password], function (err) {
         if (err) {
           rej(err);
         } else {
           const id = this.lastID; // obtiene el ID de la fila insertada
-          const sql2 = `SELECT ${sqlPlaceholder()} FROM ${TABLE} WHERE id = ?`;
+          const sql2 = `SELECT ${sqlPlaceholder()} FROM ${USER_TABLE} WHERE id = ?`;
           db.get(sql2, [id], (err, row) => {
             if (err) {
               rej(err);
@@ -93,12 +93,12 @@ export class User {
         params.push(value);
       }
 
-      const sql = `UPDATE ${TABLE} SET ${placeholder} WHERE id = ?`;
+      const sql = `UPDATE ${USER_TABLE} SET ${placeholder} WHERE id = ?`;
       db.run(sql, [...params, id], function (err) {
         if (err) {
           rej(err);
         } else {
-          const sql2 = `SELECT ${sqlPlaceholder()} FROM ${TABLE} WHERE id = ?`;
+          const sql2 = `SELECT ${sqlPlaceholder()} FROM ${USER_TABLE} WHERE id = ?`;
 
           db.get(sql2, [id], (err, row) => {
             if (err) {
@@ -118,7 +118,7 @@ export class User {
   deleteUser(data) {
     return new Promise((res, rej) => {
       // const sql = `DELETE FROM ${TABLE} WHERE id = ?`;
-      const sql = `UPDATE ${TABLE} SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+      const sql = `UPDATE ${USER_TABLE} SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
       db.run(sql, [data.id], function (err) {
         if (err) {
           rej(err);
