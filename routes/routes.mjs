@@ -58,15 +58,20 @@ import { Router } from "express";
 import { UserController } from "../controllers/user.controller.mjs";
 import { AuthController } from "../controllers/auth.controller.mjs";
 import jwtMiddleware from "../middlewares/jwt.middleware.mjs";
+import { TaskController } from "../controllers/task.controller.mjs";
 
 /** App router
- * @param {{ userModel: user }} param
+ * @param {{
+ * userModel: import('../models/sqlite/user.model.mjs').User,
+ * taskModel: import('../models/sqlite/tasks.model.mjs').Task
+ * }} param
  */
-export const appRouter = ({ userModel }) => {
+export const appRouter = ({ userModel, taskModel }) => {
   const router = Router();
 
   const authController = new AuthController({ userModel });
   const userController = new UserController({ userModel });
+  const taskController = new TaskController({ taskModel });
 
   /**
    * @swagger
@@ -155,7 +160,7 @@ export const appRouter = ({ userModel }) => {
    * @swagger
    * /user:
    *  delete:
-   *    summary: Disable profile [TODO] disable instead of delete
+   *    summary: Disable profile
    *    tags: [User]
    *    produces:
    *      - application/json
@@ -185,6 +190,7 @@ export const appRouter = ({ userModel }) => {
    */
   router.delete("/user", jwtMiddleware, userController.delete);
 
+  // AUTH
   /**
    * @swagger
    * /register:
@@ -267,7 +273,9 @@ export const appRouter = ({ userModel }) => {
    */
   router.get("/signout", authController.signout);
 
+  // TASKS
+  router.get("/task/:id", taskController.getByAuthor);
+  router.get("/task", taskController.getAll);
+
   return router;
 };
-
-/** @typedef {import('../models/sqlite/user.model.mjs').User} user */
