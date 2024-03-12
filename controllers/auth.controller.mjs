@@ -105,7 +105,8 @@ export class AuthController {
     }
 
     try {
-      const session = await this.userModel.findUserByEmail(parse.data);
+      const session = await this.userModel.getSession(parse.data.email);
+
       const isSamePassword = cipher.compare(
         parse.data.password,
         session?.password
@@ -117,7 +118,8 @@ export class AuthController {
           .json({ message: "Incorrect password or email" });
       }
 
-      const token = jwtToken.sign(session, "2d");
+      const { password, token_email, ...responseData } = session;
+      const token = jwtToken.sign(responseData, "2d");
 
       res
         .cookie("token", token, {
@@ -126,7 +128,7 @@ export class AuthController {
           secure: false,
           sameSite: "strict",
         })
-        .json(session);
+        .json(responseData);
     } catch (error) {
       logHelper("error ☠", error);
       res

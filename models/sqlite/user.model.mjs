@@ -128,6 +128,22 @@ export class User {
       });
     });
   }
+
+  /** Get all fields by email
+   * @param {string} email
+   */
+  getSession(email) {
+    return new Promise((res, rej) => {
+      const sql = `SELECT * FROM ${USER_TABLE} WHERE email = ?`;
+      db.get(sql, [email], (err, row) => {
+        if (err) {
+          rej(err);
+        } else {
+          res(row);
+        }
+      });
+    });
+  }
 }
 
 /**
