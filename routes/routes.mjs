@@ -274,9 +274,10 @@ export const appRouter = ({ userModel, taskModel }) => {
   router.get("/signout", authController.signout);
 
   // TASKS
-  router.get("/task/:id", taskController.getByAuthor);
+  router.get("/task/:id", taskController.getTaskById);
   router.get("/task", taskController.getAll);
   router.post("/task", jwtMiddleware, taskController.createTask);
+  router.patch("/task", jwtMiddleware, taskController.updateTask);
 
   return router;
 };
