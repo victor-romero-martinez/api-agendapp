@@ -1,7 +1,7 @@
 //@ts-check
 /** SQL placeholder fn
- * @param {{}} args - object
- * @returns {[placeholder: string, params: string[]]}
+ * @param {Record<string, string>} args - object
+ * @returns {[string, string[]]}
  */
 export function placeholderQuery(args) {
   let placeholder = [];
