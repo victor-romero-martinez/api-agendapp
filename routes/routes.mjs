@@ -278,6 +278,7 @@ export const appRouter = ({ userModel, taskModel }) => {
   router.get("/task", taskController.getAll);
   router.post("/task", jwtMiddleware, taskController.createTask);
   router.patch("/task", jwtMiddleware, taskController.updateTask);
+  router.delete("/task", jwtMiddleware, taskController.deleteTask);
 
   return router;
 };

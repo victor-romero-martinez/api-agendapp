@@ -81,8 +81,6 @@ export class TaskController {
     }
   };
 
-  /**  */
-
   /** Create a new task
    * @param {import('express').Request} req
    * @param {import('express').Response} res
@@ -162,6 +160,43 @@ export class TaskController {
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server error" });
+    }
+  };
+
+  /** Delete a task by id from query-params
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   */
+  deleteTask = async (req, res) => {
+    const { id } = req.query;
+    /** @type {{ email: string }} */
+    // @ts-ignore
+    const { email } = req.decode;
+
+    if (!id) {
+      return res
+        .status(cat["400_BAD_REQUEST"])
+        .json({ error: "Must provide an id." });
+    } else if (!email) {
+      return res
+        .status(cat["404_NOT_FOUND"])
+        .json({ error: "Missing email token." });
+    }
+    try {
+      const dbr = await this.taskModel.deleteTask(+id, email);
+
+      if (dbr.message === "User does not exist.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Unauthorized.") {
+        res.status(cat["401_UNAUTHORIZED"]).json(dbr);
+      } else {
+        res.json(dbr);
+      }
+    } catch (error) {
+      logHelper("error ☠", error);
+      res
+        .status(cat["500_INTERNAL_SERVER_ERROR"])
+        .json({ error: "Internal Sever Error." });
     }
   };
 }

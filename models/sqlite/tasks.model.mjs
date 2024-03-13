@@ -115,6 +115,43 @@ export class Task {
     });
   }
 
+  /** Delete a task
+   * @param {number} taskId - Id of tasks
+   * @param {string} email - Id of author
+   * @returns {Promise<TTask>}
+   */
+  deleteTask(taskId, email) {
+    return new Promise((res, rej) => {
+      const getSql = `SELECT id FROM ${USER_TABLE} WHERE email = ?`;
+      db.get(getSql, [email], (err, row) => {
+        if (err) {
+          rej(err);
+        } else if (!row) {
+          res({ message: "User does not exist." });
+        } else {
+          const authorId = row.id;
+          const checkSql = `SELECT title FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
+          db.get(checkSql, [taskId, authorId], (err, row) => {
+            if (err) {
+              rej(err);
+            } else if (!row) {
+              res({ message: "Unauthorized." });
+            } else {
+              const sql = `DELETE FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
+              db.run(sql, [taskId, authorId], (err) => {
+                if (err) {
+                  rej(err);
+                } else {
+                  res({ message: "Deleted successfully." });
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+  }
+
   /** Get id of author by email
    * @param {string} email - Author email
    * @returns {Promise<{id: number}>}
@@ -143,5 +180,6 @@ export class Task {
  *  due_date?: string
  *  updated_at?: string,
  *  created_at?: string
+ *  message?: string
  * }} TTask
  */
