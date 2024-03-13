@@ -21,13 +21,13 @@ Content-Type: application/json
 DELETE http://localhost:3000/api/v1/user?id=11
 -----------------------------------------------------------------
 # AUTH
-### registerreate a user
+### register a user
 POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "ihadaufi@uf.bv",
-  "password": "ihadaufi"
+  "email": "wog@da.et",
+  "password": "wog123456"
 }
 
 ### get session
@@ -35,8 +35,8 @@ POST  http://localhost:3000/api/v1/signing
 Content-Type: application/json
 
 {
-  "email": "fuipo@epode.pn",
-  "password": "fuipo"
+  "email": "wog@da.et",
+  "password": "wog123456"
 }
 
 ### signout session
@@ -46,7 +46,10 @@ GET http://localhost:3000/api/v1/signout
 # get all tasks
 GET http://localhost:3000/api/v1/task
 
-### get tasks by author id
+### get all tasks by query using author_id
+GET http://localhost:3000/api/v1/task?author_id=2
+
+### get tasks by id
 GET http://localhost:3000/api/v1/task/1
 
 ### create a new task
@@ -54,6 +57,19 @@ POST  http://localhost:3000/api/v1/task
 Content-Type: application/json
 
 {
-  "title": "prueba",
-  "description": "de fuergo"
+  "title": "twtw test",
+  "description": "felicidades genio!! 🎉",
+  "priority": 2,
+  "due_date": "2024-03-14 23:11:33"
+}
+
+### update a new task [TODO]
+PATCH   http://localhost:3000/api/v1/task
+Content-Type: application/json
+
+{
+  "id": 2,
+  "title": "los genios hacen eso",
+  "description": "Hay que cerrar el estadio!! 🎉",
+  "due_date": "2024-03-16 23:11:33"
 }
