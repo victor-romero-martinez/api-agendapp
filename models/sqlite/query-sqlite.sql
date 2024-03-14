@@ -6,3 +6,5 @@
 -- SELECT * FROM tasks;
 -- SELECT * FROM tasks WHERE id = 1;
 -- SELECT users.email, tasks.* FROM users JOIN tasks ON users.id = 1
+-- UPDATE tasks SET description = 'mi super description' WHERE id = 1 AND author_id = 1;
+-- SELECT * FROM tasks WHERE id = 1;

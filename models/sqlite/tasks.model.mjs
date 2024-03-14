@@ -94,57 +94,50 @@ export class Task {
         });
       });
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 
-  /** Update a task [TODO]
+  /** Update a task
    * @param {TTask} data
    * @param {string} email
    * @returns {Promise<TTask>}
    */
-  updateTask(data, email) {
-    return new Promise((res, rej) => {
+  async updateTask(data, email) {
+    try {
+      const authorId = await this.getAuthorID(email);
+
+      if (!authorId) return { message: "User does not exists." };
+
+      const checkSql = await this.checkAuthor(data.id, authorId.id);
+
+      if (!checkSql) return { message: "Unauthorize." };
+
       // split id and data
       const { id, ...newData } = data;
-      const getSql = `SELECT id FROM ${USER_TABLE} WHERE email = ?`;
-      db.get(getSql, [email], (err, row) => {
-        if (err) {
-          rej(err);
-        } else if (!row) {
-          rej({ message: "User does not exists." });
-        } else {
-          const authorId = row.id;
-          const checkSql = `SELECT title FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
 
-          db.get(checkSql, [id, authorId], (err, row) => {
-            if (err) {
-              rej(err);
-            } else if (!row) {
-              res({ message: "Unauthorize." });
-            } else {
-              const placeholder = placeholderQuery(newData, "UPDATE");
-              const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]} WHERE id = ?`;
+      return new Promise((res, rej) => {
+        const placeholder = placeholderQuery(newData, "UPDATE");
+        const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]} WHERE id = ?`;
 
-              db.run(sql, [...placeholder[1], id], function (err) {
-                if (err) {
-                  rej(err);
-                } else {
-                  const slq2 = `SELECT * FROM ${TASK_TABLE} WHERE id = ?`;
-                  db.get(slq2, [id], (err, row) => {
-                    if (err) {
-                      rej(err);
-                    } else {
-                      res(row);
-                    }
-                  });
-                }
-              });
-            }
-          });
-        }
+        db.run(sql, [...placeholder[1], id], function (err) {
+          if (err) {
+            rej(err);
+          } else {
+            const slq2 = `SELECT * FROM ${TASK_TABLE} WHERE id = ?`;
+            db.get(slq2, [id], (err, row) => {
+              if (err) {
+                rej(err);
+              } else {
+                res(row);
+              }
+            });
+          }
+        });
       });
-    });
+    } catch (error) {
+      throw error;
+    }
   }
 
   /** Delete a task
@@ -152,36 +145,29 @@ export class Task {
    * @param {string} email - Id of author
    * @returns {Promise<TTask>}
    */
-  deleteTask(taskId, email) {
-    return new Promise((res, rej) => {
-      const getSql = `SELECT id FROM ${USER_TABLE} WHERE email = ?`;
-      db.get(getSql, [email], (err, row) => {
-        if (err) {
-          rej(err);
-        } else if (!row) {
-          res({ message: "User does not exist." });
-        } else {
-          const authorId = row.id;
-          const checkSql = `SELECT title FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
-          db.get(checkSql, [taskId, authorId], (err, row) => {
-            if (err) {
-              rej(err);
-            } else if (!row) {
-              res({ message: "Unauthorized." });
-            } else {
-              const sql = `DELETE FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
-              db.run(sql, [taskId, authorId], (err) => {
-                if (err) {
-                  rej(err);
-                } else {
-                  res({ message: "Deleted successfully." });
-                }
-              });
-            }
-          });
-        }
+  async deleteTask(taskId, email) {
+    try {
+      const authorId = await this.getAuthorID(email);
+
+      if (!authorId) return { message: "User does not exists." };
+
+      const checkSql = await this.checkAuthor(taskId, authorId.id);
+
+      if (!checkSql) return { message: "Unauthorize." };
+
+      return new Promise((res, rej) => {
+        const sql = `DELETE FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
+        db.run(sql, [taskId, authorId.id], (err) => {
+          if (err) {
+            rej(err);
+          } else {
+            res({ message: `Deleted successfully tasks ${taskId}.` });
+          }
+        });
       });
-    });
+    } catch (error) {
+      throw error;
+    }
   }
 
   /** Get id of author by email
@@ -192,6 +178,25 @@ export class Task {
     return new Promise((res, rej) => {
       const sql = `SELECT id FROM ${USER_TABLE} WHERE email = ?`;
       db.get(sql, [email], (err, row) => {
+        if (err) {
+          rej(err);
+        } else {
+          res(row);
+        }
+      });
+    });
+  }
+
+  /** Check author of task
+   * @param {number} idTask
+   * @param {number} idAuthor
+   * @returns {Promise<{title:string}>}
+   */
+  checkAuthor(idTask, idAuthor) {
+    return new Promise((res, rej) => {
+      const checkSql = `SELECT title FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
+
+      db.get(checkSql, [idTask, idAuthor], (err, row) => {
         if (err) {
           rej(err);
         } else {
