@@ -135,26 +135,22 @@ export class TaskController {
       return res.status(cat["404_NOT_FOUND"]).json({ error: "Missing Email" });
     }
 
-    try {
-      // current agent
-      const authorID = await this.taskModel.getAuthorID(email);
-      // get original task from DB and extract author_id
-      const task = await this.taskModel.getTaskById(reqData.data.id);
-      // compare if current agent is owner of task
-      if (authorID.id !== task.author_id) {
-        return res
-          .status(cat["401_UNAUTHORIZED"])
-          .json({ message: "Unauthorize" });
-      }
+    const updated_at = dateFormatter();
+    const newData = {
+      updated_at,
+      ...reqData.data,
+    };
 
-      const updated_at = dateFormatter();
-      const { id, ...data } = reqData.data;
-      const newData = {
-        updated_at,
-        ...data,
-      };
-      const dbr = await this.taskModel.updateTask(newData, id);
-      res.json(dbr);
+    try {
+      const dbr = await this.taskModel.updateTask(newData, email);
+
+      if (dbr.message === "User does not exists.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Unauthorize.") {
+        res.status(cat["401_UNAUTHORIZED"]).json(dbr);
+      } else {
+        res.json(dbr);
+      }
     } catch (error) {
       logHelper("error ☠", error);
       res

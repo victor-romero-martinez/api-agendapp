@@ -90,24 +90,46 @@ export class Task {
 
   /** Update a task [TODO]
    * @param {TTask} data
-   * @param {number} id
+   * @param {string} email
    * @returns {Promise<TTask>}
    */
-  updateTask(data, id) {
+  updateTask(data, email) {
     return new Promise((res, rej) => {
-      const placeholder = placeholderQuery(data, "UPDATE");
-      const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]} WHERE id = ?`;
-
-      db.run(sql, [...placeholder[1], id], function (err) {
+      // split id and data
+      const { id, ...newData } = data;
+      const getSql = `SELECT id FROM ${USER_TABLE} WHERE email = ?`;
+      db.get(getSql, [email], (err, row) => {
         if (err) {
           rej(err);
+        } else if (!row) {
+          rej({ message: "User does not exists." });
         } else {
-          const slq2 = `SELECT * FROM ${TASK_TABLE} WHERE id = ?`;
-          db.get(slq2, [id], (err, row) => {
+          const authorId = row.id;
+          const checkSql = `SELECT title FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
+
+          db.get(checkSql, [id, authorId], (err, row) => {
             if (err) {
               rej(err);
+            } else if (!row) {
+              res({ message: "Unauthorize." });
             } else {
-              res(row);
+              const placeholder = placeholderQuery(newData, "UPDATE");
+              const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]} WHERE id = ?`;
+
+              db.run(sql, [...placeholder[1], id], function (err) {
+                if (err) {
+                  rej(err);
+                } else {
+                  const slq2 = `SELECT * FROM ${TASK_TABLE} WHERE id = ?`;
+                  db.get(slq2, [id], (err, row) => {
+                    if (err) {
+                      rej(err);
+                    } else {
+                      res(row);
+                    }
+                  });
+                }
+              });
             }
           });
         }
@@ -172,12 +194,13 @@ export class Task {
 
 /**
  * @typedef {{
+ *  id?: number,
  *  title?: string,
- *  description?: string,
+ *  description?: string|null,
  *  status?: string,
  *  priority?: number,
  *  author_id?: number,
- *  due_date?: string
+ *  due_date?: string,
  *  updated_at?: string,
  *  created_at?: string
  *  message?: string
