@@ -60,32 +60,42 @@ export class Task {
 
   /** Create a task
    * @param {TTask} data
+   * @param {string} email
    * @returns {Promise<TTask>}
    */
-  createNewTask(data) {
-    return new Promise((res, rej) => {
-      const placeholder = placeholderQuery(data);
+  async createNewTask(data, email) {
+    try {
+      const authorId = await this.getAuthorID(email);
+      if (!authorId) return { message: "User does not exist." };
+
+      const newData = { ...data, author_id: authorId.id };
+
+      const placeholder = placeholderQuery(newData);
 
       const sql = `INSERT INTO ${TASK_TABLE} (${
         placeholder[0]
-      }) VALUES(${placeholder[1].map(() => "?")})`;
+      }) VALUES(${placeholder[1].map(() => "?").join(", ")})`;
 
-      db.run(sql, [...placeholder[1]], function (err) {
-        if (err) {
-          rej(err);
-        } else {
-          const lastId = this.lastID;
-          const sql2 = `SELECT * FROM ${TASK_TABLE} WHERE id = ?`;
-          db.get(sql2, [lastId], (err, row) => {
-            if (err) {
-              rej(err);
-            } else {
-              res(row);
-            }
-          });
-        }
+      return new Promise((res, rej) => {
+        db.run(sql, [...placeholder[1]], function (err) {
+          if (err) {
+            rej(err);
+          } else {
+            const lastId = this.lastID;
+            const sql2 = `SELECT * FROM ${TASK_TABLE} WHERE id = ?`;
+            db.get(sql2, [lastId], (err, row) => {
+              if (err) {
+                rej(err);
+              } else {
+                res(row);
+              }
+            });
+          }
+        });
       });
-    });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /** Update a task [TODO]

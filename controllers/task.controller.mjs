@@ -100,17 +100,13 @@ export class TaskController {
         .json({ error: "Missing email" });
     }
 
-    const idAuthor = await this.taskModel.getAuthorID(email);
-    if (!idAuthor) {
-      return res
-        .status(cat["404_NOT_FOUND"])
-        .json({ error: "User does not exists" });
-    }
-
     try {
-      const newData = { ...reqData.data, author_id: idAuthor.id };
-      const dbr = await this.taskModel.createNewTask(newData);
-      res.json(dbr);
+      const dbr = await this.taskModel.createNewTask(reqData.data, email);
+      if (dbr.message === "User does not exist.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else {
+        res.json(dbr);
+      }
     } catch (error) {
       logHelper("error ☠", error);
       res
