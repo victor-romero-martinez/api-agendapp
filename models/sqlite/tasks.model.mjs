@@ -9,7 +9,7 @@ const TASK_TABLE = "tasks";
 /** Tasks model SQLite */
 export class Task {
   /** Get all tasks
-   * @returns {Promise<Array<TTask>>}
+   * @returns {Promise<Array<TTask&TResponse>>}
    */
   findAllTasks() {
     return new Promise((res, rej) => {
@@ -26,7 +26,7 @@ export class Task {
 
   /** Get all tasks by author_id
    * @param {number} id
-   * @returns {Promise<Array<TTask>>}
+   * @returns {Promise<Array<TTask&TResponse>>}
    */
   findTasksByAuthorId(id) {
     return new Promise((res, rej) => {
@@ -43,7 +43,7 @@ export class Task {
 
   /** Get a task by id
    * @param {number} id
-   * @returns {Promise<TTask>}
+   * @returns {Promise<TTask&TResponse>}
    */
   getTaskById(id) {
     return new Promise((res, rej) => {
@@ -61,7 +61,7 @@ export class Task {
   /** Create a task
    * @param {TTask} data
    * @param {string} email
-   * @returns {Promise<TTask>}
+   * @returns {Promise<TTask&TResponse>}
    */
   async createNewTask(data, email) {
     try {
@@ -101,7 +101,7 @@ export class Task {
   /** Update a task
    * @param {TTask} data
    * @param {string} email
-   * @returns {Promise<TTask>}
+   * @returns {Promise<TTask&TResponse>}
    */
   async updateTask(data, email) {
     try {
@@ -143,7 +143,7 @@ export class Task {
   /** Delete a task
    * @param {number} taskId - Id of tasks
    * @param {string} email - Id of author
-   * @returns {Promise<TTask>}
+   * @returns {Promise<TTask&TResponse>}
    */
   async deleteTask(taskId, email) {
     try {
@@ -207,17 +207,22 @@ export class Task {
   }
 }
 
-/**
+/** Type input
  * @typedef {{
  *  id?: number,
  *  title?: string,
  *  description?: string|null,
  *  status?: string,
  *  priority?: number,
- *  author_id?: number,
  *  due_date?: string,
  *  updated_at?: string,
- *  created_at?: string
- *  message?: string
  * }} TTask
+*/
+
+/** Type Response
+ * @typedef {{
+ *  created_at: string
+ *  author_id: number,
+ *  message: string
+ * }} TResponse
  */
