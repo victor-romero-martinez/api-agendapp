@@ -178,37 +178,24 @@ export class UserController {
    * @param {import('express').Response} res
    */
   delete = async (req, res) => {
-    /**
-     *  @type {TToken} */
+    const id = +req.query?.id;
+    /** @type {{ email: string}} */
     // @ts-ignore
-    const token = req.decode;
-    const { id } = req.query;
+    const {email} = req.decode;
 
-    if (!id || !token.role) {
-      return res.status(cat["404_NOT_FOUND"]).json({ error: "Not found" });
+    if (!id) {
+      return res.status(cat["400_BAD_REQUEST"]).json({ messaeg: 'Missing id'})
+    } else if (!email) {
+      return res.status(cat["400_BAD_REQUEST"]).json({ messaeg: 'Missing email'})
     }
 
-    if (token.role.includes("admin")) {
-      const newId = { id: +id };
-
-      const dbr = await this.userModel.deleteUser(newId);
-      res.json(dbr);
-    } else {
-      try {
-        const findEmail = await this.userModel.findUserByEmail(token);
-
-        if (!findEmail) {
-          return res
-            .status(cat["500_INTERNAL_SERVER_ERROR"])
-            .json({ error: "User not found." });
-        }
-
-        const dbr = await this.userModel.deleteUser(findEmail);
-        res.cookie("token", "", { expires: new Date(0) }).json(dbr);
-      } catch (error) {
-        logHelper("error ☠", error);
-        res.status(cat["500_INTERNAL_SERVER_ERROR"]).json(error);
-      }
+    try { 
+      const dbr = await this.userModel.deleteUser(id);
+      res.cookie("token", "", { expires: new Date(0) }).json(dbr);
+    } catch (error) {
+      logHelper('error ☠', error)
+      res.status(cat["500_INTERNAL_SERVER_ERROR"]).json({ error: 'Internal Server Error.'})
+    }
     }
   };
 }

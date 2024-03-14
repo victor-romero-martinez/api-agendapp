@@ -113,9 +113,11 @@ export class User {
   }
 
   /** Delete an account
-   * @param {TUser} data
+   * @param {number} id
+   * @param {string} email
+   * @returns {Promise<{ message: string}>}
    */
-  deleteUser(data) {
+  deleteUser(id, email) {
     return new Promise((res, rej) => {
       // const sql = `DELETE FROM ${TABLE} WHERE id = ?`;
       const sql = `UPDATE ${USER_TABLE} SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
@@ -146,7 +148,7 @@ export class User {
   }
 }
 
-/**
+/** Type input
  * @typedef {{
  * id?: number,
  * email?: string,
@@ -157,4 +159,12 @@ export class User {
  * token_email?: string,
  * updated_at?: string|Date
  * }} TUser
+ */
+
+/** Type response
+ * @typedef {{
+ * role: string,
+ * verified: boolean
+ * created_at: string
+ * }} TResponse
  */
