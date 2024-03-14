@@ -217,7 +217,7 @@ export class Task {
  *  due_date?: string,
  *  updated_at?: string,
  * }} TTask
-*/
+ */
 
 /** Type Response
  * @typedef {{

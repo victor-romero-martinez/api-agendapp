@@ -92,84 +92,28 @@ export class UserController {
     if (!parse.success) {
       return res.status(cat["400_BAD_REQUEST"]).json(parse.error.issues);
     }
-
-    const targetToUpdate = await this.userModel.findUserByEmail(token);
-
-    if (!targetToUpdate) {
-      return res
+    try {
+      const dbr = await this.userModel.updateUser(parse.data, token.email);
+      if (dbr.message === "Failed to update user.") {
+        res.status(cat["500_INTERNAL_SERVER_ERROR"]).json(dbr);
+      } else if (dbr.message === "Incorrect password.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else {
+        const token = jwtToken.sign(dbr, "2d");
+        res
+          .cookie("token", token, {
+            maxAge: 172800000,
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+          })
+          .json(dbr);
+      }
+    } catch (error) {
+      logHelper("error ☠", error);
+      res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
-        .json({ error: "Failed to update user" });
-    }
-
-    const { new_password, password, ...updateData } = parse.data;
-    /** new data */
-    const newData = {
-      ...updateData,
-      updated_at: dateFormatter(),
-    };
-
-    if (parse.data.new_password && parse.data.password) {
-      const isAuthorized = cipher.compare(
-        parse.data.password,
-        targetToUpdate.password
-      );
-
-      if (!isAuthorized) {
-        return res
-          .status(cat["404_NOT_FOUND"])
-          .json({ error: "Incorrect password" });
-      }
-
-      const newPassword = cipher.generate(parse.data.new_password);
-
-      if (!newPassword) {
-        return res
-          .status(cat["500_INTERNAL_SERVER_ERROR"])
-          .json({ error: "Failed to update user" });
-      }
-
-      try {
-        const dataFix = {
-          ...newData,
-          password: newPassword,
-        };
-
-        const dbr = await this.userModel.updateUser(dataFix, targetToUpdate.id);
-        const token = jwtToken.sign(dbr, "2d");
-
-        res
-          .cookie("token", token, {
-            maxAge: 172800000,
-            httpOnly: true,
-            secure: false,
-            sameSite: "strict",
-          })
-          .json(dbr);
-      } catch (error) {
-        logHelper("error ☠", error);
-        res
-          .status(cat["500_INTERNAL_SERVER_ERROR"])
-          .json({ error: "Failed to update user”" });
-      }
-    } else {
-      try {
-        const dbr = await this.userModel.updateUser(newData, targetToUpdate.id);
-        const token = jwtToken.sign(dbr, "2d");
-
-        res
-          .cookie("token", token, {
-            maxAge: 172800000,
-            httpOnly: true,
-            secure: false,
-            sameSite: "strict",
-          })
-          .json(dbr);
-      } catch (error) {
-        logHelper("error ☠", error);
-        res
-          .status(cat["500_INTERNAL_SERVER_ERROR"])
-          .json({ error: "Internal Server Error" });
-      }
+        .json({ error: "Internal Server Error." });
     }
   };
 
@@ -178,24 +122,36 @@ export class UserController {
    * @param {import('express').Response} res
    */
   delete = async (req, res) => {
-    const id = +req.query?.id;
+    const id = req.query?.id;
     /** @type {{ email: string}} */
     // @ts-ignore
-    const {email} = req.decode;
+    const { email } = req.decode;
 
     if (!id) {
-      return res.status(cat["400_BAD_REQUEST"]).json({ messaeg: 'Missing id'})
+      return res
+        .status(cat["400_BAD_REQUEST"])
+        .json({ message: "Missing user id" });
     } else if (!email) {
-      return res.status(cat["400_BAD_REQUEST"]).json({ messaeg: 'Missing email'})
+      return res
+        .status(cat["400_BAD_REQUEST"])
+        .json({ message: "Missing user email" });
     }
 
-    try { 
-      const dbr = await this.userModel.deleteUser(id);
-      res.cookie("token", "", { expires: new Date(0) }).json(dbr);
+    try {
+      const dbr = await this.userModel.deleteUser(+id, email);
+
+      if (dbr.message === "User does not exists.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Unauthorize.") {
+        res.status(cat["401_UNAUTHORIZED"]).json(dbr);
+      } else {
+        res.cookie("token", "", { expires: new Date(0) }).json(dbr);
+      }
     } catch (error) {
-      logHelper('error ☠', error)
-      res.status(cat["500_INTERNAL_SERVER_ERROR"]).json({ error: 'Internal Server Error.'})
-    }
+      logHelper("error ☠", error);
+      res
+        .status(cat["500_INTERNAL_SERVER_ERROR"])
+        .json({ error: "Internal Server Error." });
     }
   };
 }

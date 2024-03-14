@@ -6,7 +6,7 @@ POST  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "email": "votuce@rupavaz.bf"
+  "email": "fidum@acidu.cv"
 }
 
 ### update a user only wid session
@@ -14,11 +14,11 @@ PATCH  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "user_name": "fuipo"
+  "user_name": "fidum1"
 }
 
 ### Disable profile
-DELETE http://localhost:3000/api/v1/user?id=11
+DELETE http://localhost:3000/api/v1/user?id=2
 -----------------------------------------------------------------
 # AUTH
 ### register a user
@@ -26,8 +26,8 @@ POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "wog@da.et",
-  "password": "wog123456"
+  "email": "fidum@acidu.cv",
+  "password": "fidum"
 }
 
 ### get session
@@ -35,8 +35,8 @@ POST  http://localhost:3000/api/v1/signing
 Content-Type: application/json
 
 {
-  "email": "wog@da.et",
-  "password": "wog123456"
+  "email": "fidum@acidu.cv",
+  "password": "123456"
 }
 
 ### signout session
