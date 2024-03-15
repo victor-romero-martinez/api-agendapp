@@ -2,9 +2,9 @@
 import "dotenv/config";
 import swaggerJSDoc from "swagger-jsdoc";
 
-const PORT = process.env.PORT ?? 3000;
-const VERSION = process.env.API_VERSION ?? "v1";
-const PATH = process.env.URL_BASE ?? "http://localhost";
+const PORT = process.env.PORT;
+const VERSION = process.env.API_VERSION;
+const HOST = process.env.URL_BASE;
 
 /** Swagger options
  * @type {Swagger}
@@ -15,11 +15,11 @@ const options = {
     info: {
       title: "Api Agendapp",
       version: "0.0.1",
-      description: "Aplicación de agenda/tarea",
+      description: "Aplicación de agenda/tareas",
     },
     servers: [
       {
-        url: `${PATH}:${PORT}/api/${VERSION}`,
+        url: `${HOST}:${PORT}/api/${VERSION}`,
       },
     ],
   },
