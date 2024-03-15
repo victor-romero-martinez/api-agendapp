@@ -6,6 +6,7 @@ import swaggerUI from "swagger-ui-express";
 import { specs } from "./config/swagger.mjs";
 import { corsMiddleware } from "./middlewares/cors.middleware.mjs";
 import { appRouter } from "./routes/routes.mjs";
+import { logHelper } from "./utils/log-helper.mjs";
 
 /** App index
  * @param {{
@@ -18,6 +19,7 @@ export const createApp = ({ userModel, taskModel }) => {
 
   const PORT = process.env.PORT ?? 3000;
   const VERSION = process.env.API_VERSION ?? "v1";
+  const HOST = process.env.URL_BASE ?? "http:localhost";
 
   app.disable("x-powered-by");
   app.use(express.json());
@@ -27,5 +29,7 @@ export const createApp = ({ userModel, taskModel }) => {
   app.use(`/api/${VERSION}`, appRouter({ userModel, taskModel }));
   app.use(`/api/${VERSION}/docs`, swaggerUI.serve, swaggerUI.setup(specs));
 
-  app.listen(PORT, () => {});
+  app.listen(PORT, () => {
+    logHelper("info ✨", `App Listening on ${HOST}:${PORT}/api/${VERSION}`);
+  });
 };
