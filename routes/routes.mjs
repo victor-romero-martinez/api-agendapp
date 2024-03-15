@@ -110,7 +110,7 @@ export const appRouter = ({ userModel, taskModel }) => {
    * @swagger
    * /user:
    *  get:
-   *    summary: Get all Users
+   *    summary: Get all Users.
    *    tags: [User]
    *    produces:
    *      - application/json
@@ -131,7 +131,7 @@ export const appRouter = ({ userModel, taskModel }) => {
    * @swagger
    * /user:
    *  post:
-   *    summary: Get a user by email
+   *    summary: Get a user by email.
    *    tags: [User]
    *    produces:
    *      - application/json
@@ -162,7 +162,7 @@ export const appRouter = ({ userModel, taskModel }) => {
    * @swagger
    * /user:
    *  patch:
-   *    summary: Update a profile
+   *    summary: Update a profile.
    *    tags: [User]
    *    produces:
    *      - application/json
@@ -193,7 +193,7 @@ export const appRouter = ({ userModel, taskModel }) => {
    * @swagger
    * /user:
    *  delete:
-   *    summary: Disable profile
+   *    summary: Disable profile.
    *    tags: [User]
    *    produces:
    *      - application/json
@@ -228,7 +228,7 @@ export const appRouter = ({ userModel, taskModel }) => {
    * @swagger
    * /register:
    *  post:
-   *    summary: Register an account
+   *    summary: Register an account.
    *    tags: [Auth]
    *    produces:
    *      - application/json
@@ -263,7 +263,7 @@ export const appRouter = ({ userModel, taskModel }) => {
    * @swagger
    * /signing:
    *  post:
-   *    summary: Signing to get auth
+   *    summary: Signing to get auth.
    *    tags: [Auth]
    *    produces:
    *      - application/json
@@ -298,7 +298,7 @@ export const appRouter = ({ userModel, taskModel }) => {
    * @swagger
    * /signout:
    *  get:
-   *    summary: Close session
+   *    summary: Close session.
    *    tags: [Auth]
    *    responses:
    *      200:
@@ -311,7 +311,7 @@ export const appRouter = ({ userModel, taskModel }) => {
    * @swagger
    * /task/{id}:
    *  get:
-   *    summary: Get a task by id
+   *    summary: Get a task by id.
    *    tags: [Task]
    *    produces:
    *      - application/json
@@ -338,9 +338,9 @@ export const appRouter = ({ userModel, taskModel }) => {
   router.get("/task/:id", taskController.getTaskById);
   /**
    * @swagger
-   * /task/:
+   * /task:
    *  get:
-   *    summary: Get all tasks
+   *    summary: Get all tasks.
    *    tags: [Task]
    *    produces:
    *      - application/json
@@ -357,8 +357,108 @@ export const appRouter = ({ userModel, taskModel }) => {
    *        description: Internal Sever Error.
    */
   router.get("/task", taskController.getAll);
+  /**
+   * @swagger
+   * /task:
+   *  post:
+   *    summary: Create a new task.
+   *    tags: [Task]
+   *    produces:
+   *      - application/json
+   *    security:
+   *      - cookieAuth: []
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/TaskEditable'
+   *    responses:
+   *      201:
+   *        description: Response task created.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/Task'
+   *      401:
+   *        description: Unauthorized.
+   *      400:
+   *        description: Bad Request.
+   *      404:
+   *        description: User does not exists.
+   *      500:
+   *        description: Internal Server Error.
+   *
+   */
   router.post("/task", jwtMiddleware, taskController.createTask);
+  /**
+   * @swagger
+   * /task:
+   *  patch:
+   *    summary: Update a task.
+   *    tags: [Task]
+   *    produces:
+   *      - application/json
+   *    security:
+   *      - cookieAuth: []
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *           schema:
+   *             $ref: '#/components/TaskEditable'
+   *    responses:
+   *      200:
+   *        description: Response task update.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#components/schemas/Task'
+   *      400:
+   *        description: Bad Request.
+   *      401:
+   *        description: Unauthorized.
+   *      404:
+   *        description: Not Found.
+   *      500:
+   *        description: Internal Sever Error.
+   */
   router.patch("/task", jwtMiddleware, taskController.updateTask);
+  /**
+   * @swagger
+   * /task:
+   *  delete:
+   *    summary: Delete  a task.
+   *    tags: [Task]
+   *    produces:
+   *      - application/json
+   *    security:
+   *      - cookieAuth: []
+   *    parameters:
+   *      - in: query
+   *        name: id
+   *        required: true
+   *        schema:
+   *          type: string
+   *    responses:
+   *      200:
+   *        description: Response Successfully.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                message:
+   *                  type: string
+   *      400:
+   *        description: Bad Request
+   *      401:
+   *        description: Unauthorized.
+   *      404:
+   *        description: Not Found.
+   *      500:
+   *        description: Internal Server Error.
+   */
   router.delete("/task", jwtMiddleware, taskController.deleteTask);
 
   return router;

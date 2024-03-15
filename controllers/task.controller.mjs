@@ -105,7 +105,7 @@ export class TaskController {
       if (dbr.message === "User does not exist.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else {
-        res.json(dbr);
+        res.status(cat["201_CREATED"]).json(dbr);
       }
     } catch (error) {
       logHelper("error ☠", error);
