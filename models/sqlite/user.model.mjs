@@ -2,6 +2,7 @@
 import "dotenv/config";
 import { Cipher } from "../../utils/cipher.mjs";
 import { db } from "./config/database.local.mjs";
+import { placeholderQuery } from "../../utils/slq-placeholder.mjs";
 
 const SECRET = process.env.SECRET;
 /** Name of the table */
@@ -47,7 +48,7 @@ export class User {
 
   /** Get user by email
    * @param {TUser} data
-   * @returns {Promise<TResponse>}
+   * @returns {Promise<TUser&TResponse>}
    */
   findUserByEmail(data) {
     return new Promise((res, rej) => {
@@ -89,7 +90,7 @@ export class User {
   /** Update a user
    * @param {TUser} data
    * @param {string} email
-   * @returns {Promise<TResponse>}
+   * @returns {Promise<TUser&TResponse>}
    */
   async updateUser(data, email) {
     try {
@@ -155,7 +156,7 @@ export class User {
 
   /** Get all fields by email
    * @param {string} email
-   * @returns {Promise<TResponse>}
+   * @returns {Promise<TUser&TResponse>}
    */
   getSession(email) {
     return new Promise((res, rej) => {
@@ -173,20 +174,14 @@ export class User {
   /** Updater class
    * @param {TUser} data
    * @param {number} id
-   * @returns {Promise<TResponse>}
+   * @returns {Promise<TUser&TResponse>}
    */
   #updater(data, id) {
     return new Promise((res, rej) => {
-      let placeholder = [];
-      let params = [];
+      const placeholder = placeholderQuery(data, "UPDATE");
 
-      for (const [key, value] of Object.entries(data)) {
-        placeholder.push(key + " = ?");
-        params.push(value);
-      }
-
-      const sql = `UPDATE ${USER_TABLE} SET ${placeholder} WHERE id = ?`;
-      db.run(sql, [...params, id], function (err) {
+      const sql = `UPDATE ${USER_TABLE} SET ${placeholder[0]}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+      db.run(sql, [...placeholder[1], id], function (err) {
         if (err) {
           rej(err);
         } else {
@@ -232,23 +227,14 @@ export class User {
  * url_img?: string,
  * active?: boolean,
  * token_email?: string,
- * updated_at?: string|Date
  * }} TUser
  */
 
 /** Type response
  * @typedef {{
- * id?: number,
- * email?: string,
- * password?: string,
- * new_password?: string,
- * user_name?: string,
- * url_img?: string,
- * active?: boolean,
- * token_email?: string,
- * updated_at?: string|Date,
  * role?: string,
  * verified?: boolean,
+ * updated_at?: string|Date,
  * created_at?: string,
  * message?: string
  * }} TResponse
