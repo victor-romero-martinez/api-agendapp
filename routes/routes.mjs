@@ -18,6 +18,10 @@
  *        password:
  *          type: string
  *          format: password
+ *    Task:
+ *      allOf:
+ *         - $ref: '#/components/TaskEditable'
+ *         - $ref: '#/components/TaskNoEditable'
  *  UserEditable:
  *    type: object
  *    properties:
@@ -50,6 +54,35 @@
  *        type: string
  *        format: date
  *      created_ad:
+ *        type: string
+ *        format: date
+ *  TaskEditable:
+ *    type: object
+ *    properties:
+ *      title:
+ *        type: string
+ *      description:
+ *        type: string
+ *      status:
+ *        type: string
+ *        default: pending
+ *      priority:
+ *        type: number
+ *        default: 1
+ *      due_date:
+ *        type: string
+ *        format: date
+ *  TaskNoEditable:
+ *    type: object
+ *    properties:
+ *      id:
+ *        type: number
+ *      author_id:
+ *        type: number
+ *      created_at:
+ *        type: string
+ *        format: date
+ *      updated_at:
  *        type: string
  *        format: date
  */
@@ -218,10 +251,10 @@ export const appRouter = ({ userModel, taskModel }) => {
    *          application/json:
    *            schema:
    *              $ref: '#/components/schemas/User'
-   *      400:
-   *        description: Email is already exist
    *      404:
-   *        description: Not Found
+   *        description: Not Found.
+   *      409:
+   *        description: User is already exists.
    *      500:
    *        description: Internal Server Error.
    */
@@ -254,11 +287,11 @@ export const appRouter = ({ userModel, taskModel }) => {
    *            schema:
    *              $ref: '#/components/schemas/User'
    *      404:
-   *        description: Not Found
+   *        description: Not Found.
    *      401:
-   *        description: Incorrect password or email
+   *        description: Incorrect password or email.
    *      500:
-   *        description: Internal Server Error
+   *        description: Internal Server Error/
    */
   router.post("/signing", authController.signing);
   /**
@@ -274,7 +307,55 @@ export const appRouter = ({ userModel, taskModel }) => {
   router.get("/signout", authController.signout);
 
   // TASKS
+  /**
+   * @swagger
+   * /task/{id}:
+   *  get:
+   *    summary: Get a task by id
+   *    tags: [Task]
+   *    produces:
+   *      - application/json
+   *    parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        schema:
+   *          type: string
+   *    responses:
+   *      200:
+   *        description: Get one task
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/Task'
+   *      400:
+   *        description: Should be a number.
+   *      404:
+   *        description: Not Found.
+   *      500:
+   *        description: Internal Sever Error.
+   */
   router.get("/task/:id", taskController.getTaskById);
+  /**
+   * @swagger
+   * /task/:
+   *  get:
+   *    summary: Get all tasks
+   *    tags: [Task]
+   *    produces:
+   *      - application/json
+   *    responses:
+   *      200:
+   *        description: Get all tasks
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: array
+   *              items:
+   *                 $ref: '#/components/schemas/Task'
+   *      500:
+   *        description: Internal Sever Error.
+   */
   router.get("/task", taskController.getAll);
   router.post("/task", jwtMiddleware, taskController.createTask);
   router.patch("/task", jwtMiddleware, taskController.updateTask);
