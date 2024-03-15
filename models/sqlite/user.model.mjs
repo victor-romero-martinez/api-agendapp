@@ -70,9 +70,7 @@ export class User {
   async createUser(data) {
     try {
       const isAlreadyExist = await this.findUserByEmail(data);
-      console.log("isAlreadyExist: ", isAlreadyExist);
 
-      console.log("data: ", data);
       if (isAlreadyExist) {
         if (isAlreadyExist.email && isAlreadyExist.active == false) {
           return await this.updateUser({ active: true }, isAlreadyExist.email);
@@ -83,7 +81,6 @@ export class User {
 
       // for new user
       const password = cipher.generate(data.password);
-      console.log("password: ", password);
 
       return new Promise((res, rej) => {
         const sql = `INSERT INTO ${USER_TABLE} (email, password) VALUES(?, ?)`;
