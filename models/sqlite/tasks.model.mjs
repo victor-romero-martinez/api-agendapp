@@ -1,4 +1,4 @@
-//@ts-ignore
+//@ts-check
 import { placeholderQuery } from "../../utils/slq-placeholder.mjs";
 import { db } from "./config/database.local.mjs";
 import { USER_TABLE } from "./user.model.mjs";
@@ -65,7 +65,7 @@ export class Task {
    */
   async createNewTask(data, email) {
     try {
-      const authorId = await this.getAuthorID(email);
+      const authorId = await this.#getAuthorID(email);
       if (!authorId) return { message: "User does not exist." };
 
       const newData = { ...data, author_id: authorId.id };
@@ -105,11 +105,12 @@ export class Task {
    */
   async updateTask(data, email) {
     try {
-      const authorId = await this.getAuthorID(email);
+      const authorId = await this.#getAuthorID(email);
 
       if (!authorId) return { message: "User does not exists." };
+      if (!data.id) return { message: "Task does not exists." };
 
-      const checkSql = await this.checkAuthor(data.id, authorId.id);
+      const checkSql = await this.#checkAuthor(data.id, authorId.id);
 
       if (!checkSql) return { message: "Unauthorize." };
 
@@ -118,7 +119,7 @@ export class Task {
 
       return new Promise((res, rej) => {
         const placeholder = placeholderQuery(newData, "UPDATE");
-        const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]} WHERE id = ?`;
+        const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
 
         db.run(sql, [...placeholder[1], id], function (err) {
           if (err) {
@@ -147,11 +148,11 @@ export class Task {
    */
   async deleteTask(taskId, email) {
     try {
-      const authorId = await this.getAuthorID(email);
+      const authorId = await this.#getAuthorID(email);
 
       if (!authorId) return { message: "User does not exists." };
 
-      const checkSql = await this.checkAuthor(taskId, authorId.id);
+      const checkSql = await this.#checkAuthor(taskId, authorId.id);
 
       if (!checkSql) return { message: "Unauthorize." };
 
@@ -174,7 +175,7 @@ export class Task {
    * @param {string} email - Author email
    * @returns {Promise<{id: number}>}
    */
-  getAuthorID(email) {
+  #getAuthorID(email) {
     return new Promise((res, rej) => {
       const sql = `SELECT id FROM ${USER_TABLE} WHERE email = ?`;
       db.get(sql, [email], (err, row) => {
@@ -192,7 +193,7 @@ export class Task {
    * @param {number} idAuthor
    * @returns {Promise<{title:string}>}
    */
-  checkAuthor(idTask, idAuthor) {
+  #checkAuthor(idTask, idAuthor) {
     return new Promise((res, rej) => {
       const checkSql = `SELECT title FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
 
@@ -215,14 +216,14 @@ export class Task {
  *  status?: string,
  *  priority?: number,
  *  due_date?: string,
- *  updated_at?: string,
  * }} TTask
  */
 
 /** Type Response
  * @typedef {{
- *  created_at: string
- *  author_id: number,
- *  message: string
+ *  updated_at?: string,
+ *  created_at?: string
+ *  author_id?: number,
+ *  message?: string
  * }} TResponse
  */
