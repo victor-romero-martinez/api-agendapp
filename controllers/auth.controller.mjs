@@ -38,58 +38,29 @@ export class AuthController {
       return res.status(cat["404_NOT_FOUND"]).json(parse.error.issues);
     }
 
-    // is already
-    const isAlreadyExist = await this.userModel.findUserByEmail(parse.data);
-    if (isAlreadyExist?.active === 0) {
-      const dbr = await this.userModel.updateUser(
-        {
-          active: true,
-          updated_at: dateFormatter(),
-        },
-        isAlreadyExist.id
-      );
-
-      const token = jwtToken.sign(dbr, "2d");
-
-      return res
-        .cookie("token", token, {
-          maxAge: 172800000,
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-        })
-        .json(dbr);
-    } else if (isAlreadyExist) {
-      return res
-        .status(cat["400_BAD_REQUEST"])
-        .json({ message: "Email is already exist" });
-    }
-
-    const newPassword = cipher.generate(parse.data.password);
-    const newData = {
-      ...parse.data,
-      password: newPassword,
-    };
-
     try {
-      const session = await this.userModel.createUser(newData);
+      const dbr = await this.userModel.createUser(parse.data);
 
-      const token = jwtToken.sign(session, "2d");
+      if (dbr.message === "User is already exists.") {
+        res.status(cat["409_CONFLICT"]).json(dbr);
+      } else {
+        const token = jwtToken.sign(dbr, "2d");
 
-      res
-        .cookie("token", token, {
-          maxAge: 172800000,
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-        })
-        .status(cat["201_CREATED"])
-        .json(session);
-    } catch (e) {
-      logHelper("error ☠", e);
+        res
+          .cookie("token", token, {
+            maxAge: 172800000,
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+          })
+          .status(cat["201_CREATED"])
+          .json(dbr);
+      }
+    } catch (error) {
+      logHelper("error ☠", error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
-        .json({ error: "Internal Server Error" });
+        .json({ error: "Internal Server Error." });
     }
   };
 

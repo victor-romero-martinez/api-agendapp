@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ### Disable profile
-DELETE http://localhost:3000/api/v1/user?id=2
+DELETE http://localhost:3000/api/v1/user?id=3
 -----------------------------------------------------------------
 # AUTH
 ### register a user
@@ -26,8 +26,8 @@ POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "fidum@acidu.cv",
-  "password": "fidum"
+  "email": "zutzus@gomol.re",
+  "password": "zutzus"
 }
 
 ### get session

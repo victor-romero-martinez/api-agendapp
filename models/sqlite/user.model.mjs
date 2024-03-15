@@ -64,27 +64,48 @@ export class User {
   }
 
   /** Create a new account
-   * @param {TUser} data
+   * @param {{ email: string, password: string }} data
+   * @returns {Promise<TUser&TResponse>}
    */
-  createUser(data) {
-    return new Promise((res, rej) => {
-      const sql = `INSERT INTO ${USER_TABLE} (email, password) VALUES(?, ?)`;
-      db.run(sql, [data.email, data.password], function (err) {
-        if (err) {
-          rej(err);
-        } else {
-          const id = this.lastID; // obtiene el ID de la fila insertada
-          const sql2 = `SELECT ${sqlPlaceholder()} FROM ${USER_TABLE} WHERE id = ?`;
-          db.get(sql2, [id], (err, row) => {
-            if (err) {
-              rej(err);
-            } else {
-              res(row); // devuelve la fila insertada
-            }
-          });
+  async createUser(data) {
+    try {
+      const isAlreadyExist = await this.findUserByEmail(data);
+      console.log("isAlreadyExist: ", isAlreadyExist);
+
+      console.log("data: ", data);
+      if (isAlreadyExist) {
+        if (isAlreadyExist.email && isAlreadyExist.active == false) {
+          return await this.updateUser({ active: true }, isAlreadyExist.email);
+        } else if (isAlreadyExist.active == true) {
+          return { message: "User is already exists." };
         }
+      }
+
+      // for new user
+      const password = cipher.generate(data.password);
+      console.log("password: ", password);
+
+      return new Promise((res, rej) => {
+        const sql = `INSERT INTO ${USER_TABLE} (email, password) VALUES(?, ?)`;
+        db.run(sql, [data.email, password], function (err) {
+          if (err) {
+            rej(err);
+          } else {
+            const id = this.lastID; // obtiene el ID de la fila insertada
+            const sql2 = `SELECT ${sqlPlaceholder()} FROM ${USER_TABLE} WHERE id = ?`;
+            db.get(sql2, [id], (err, row) => {
+              if (err) {
+                rej(err);
+              } else {
+                res(row); // devuelve la fila insertada
+              }
+            });
+          }
+        });
       });
-    });
+    } catch (error) {
+      throw error;
+    }
   }
 
   /** Update a user
@@ -156,7 +177,6 @@ export class User {
 
   /** Get all fields by email
    * @param {string} email
-   * @returns {Promise<TUser&TResponse>}
    */
   getSession(email) {
     return new Promise((res, rej) => {
