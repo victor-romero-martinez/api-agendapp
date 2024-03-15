@@ -1,6 +1,6 @@
 //@ts-check
 /** SQL placeholder fn
- * @param {Record<string, string>} args - object
+ * @param {Record<string, any>} args - object
  * @param {'INSERT'|'UPDATE'} variant - variant
  * @returns {[string, string[]]}
  */
