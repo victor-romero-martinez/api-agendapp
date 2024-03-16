@@ -68,7 +68,6 @@ export class User {
    * @returns {Promise<TUser&TResponse>}
    */
   async createUser(data) {
-    console.log("data: ", data);
     try {
       const isAlreadyExist = await this.findUserByEmail(data);
 

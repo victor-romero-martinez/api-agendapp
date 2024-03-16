@@ -19,6 +19,9 @@ Content-Type: application/json
 
 ### Disable profile
 DELETE http://localhost:3000/api/v1/user?id=3
+
+### verify account
+GET  http://localhost:3000/api/v1/verify?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImloY29Ad2VqZS5wayIsImlhdCI6MTcxMDYwMjc4MywiZXhwIjoxNzExMjA3NTgzfQ.gpPkrv6HJUC2dTA6TWG3Ujd8PFXNe3jk_ijKP-jXSAc
 -----------------------------------------------------------------
 # AUTH
 ### register a user
@@ -26,8 +29,8 @@ POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "zutzus@gomol.re",
-  "password": "zutzus"
+  "email": "ihco@weje.pk",
+  "password": "ihco@"
 }
 
 ### get session

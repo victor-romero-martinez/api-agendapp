@@ -88,10 +88,10 @@
  */
 //@ts-check
 import { Router } from "express";
-import { UserController } from "../controllers/user.controller.mjs";
 import { AuthController } from "../controllers/auth.controller.mjs";
-import jwtMiddleware from "../middlewares/jwt.middleware.mjs";
 import { TaskController } from "../controllers/task.controller.mjs";
+import { UserController } from "../controllers/user.controller.mjs";
+import jwtMiddleware from "../middlewares/jwt.middleware.mjs";
 
 /** App router
  * @param {{
@@ -460,6 +460,8 @@ export const appRouter = ({ userModel, taskModel }) => {
    *        description: Internal Server Error.
    */
   router.delete("/task", jwtMiddleware, taskController.deleteTask);
+
+  router.get("/verify", userController.verifyEmail);
 
   return router;
 };

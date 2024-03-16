@@ -5,7 +5,6 @@ import { Cipher } from "../utils/cipher.mjs";
 import { cat } from "../utils/httpcat.mjs";
 import { JwtToken } from "../utils/jwtToken.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
-import { dateFormatter } from "../utils/dateFormatter.mjs";
 
 const SECRET = process.env.SECRET;
 const JWT_SECRET = process.env.JWT;
@@ -38,8 +37,17 @@ export class AuthController {
       return res.status(cat["404_NOT_FOUND"]).json(parse.error.issues);
     }
 
+    const token = jwtToken.sign({ email: parse.data.email }, "7d");
+    if (!token) {
+      return res
+        .status(cat["404_NOT_FOUND"])
+        .json({ error: "Internal Server Error." });
+    }
+
+    const newUser = { ...parse.data, token_email: token };
+
     try {
-      const dbr = await this.userModel.createUser(parse.data);
+      const dbr = await this.userModel.createUser(newUser);
 
       if (dbr.message === "User is already exists.") {
         res.status(cat["409_CONFLICT"]).json(dbr);

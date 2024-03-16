@@ -161,6 +161,37 @@ export class UserController {
         .json({ error: "Internal Server Error." });
     }
   };
+
+  /** Verify email active db
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   */
+  verifyEmail = async (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+      return res.status(cat["404_NOT_FOUND"]).send("<h1>404 Not Found :(</h1>");
+    }
+
+    /** @type {{ email: string }} */
+    // @ts-ignore
+    const decode = jwtToken.verify(token);
+    if (!decode) {
+      return res.status(cat["404_NOT_FOUND"]).send("<h1>404 Not Found :(</h1>");
+    }
+
+    try {
+      const dbr = await this.userModel.updateUser(
+        { verified: true },
+        decode.email
+      );
+      res.json(dbr);
+    } catch (error) {
+      logHelper("error ☠", error);
+      res
+        .status(cat["500_INTERNAL_SERVER_ERROR"])
+        .json({ error: "Internal Server Error." });
+    }
+  };
 }
 
 /** @typedef {import('../models/sqlite/user.model.mjs').User} TUser */
@@ -170,4 +201,4 @@ export class UserController {
  * username: string|null,
  * role: 'admin'|'user'
  * }} TToken
- *  */
+ **/
