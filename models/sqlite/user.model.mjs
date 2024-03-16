@@ -64,10 +64,11 @@ export class User {
   }
 
   /** Create a new account
-   * @param {{ email: string, password: string }} data
+   * @param {{ email: string, password: string, token_email: string }} data
    * @returns {Promise<TUser&TResponse>}
    */
   async createUser(data) {
+    console.log("data: ", data);
     try {
       const isAlreadyExist = await this.findUserByEmail(data);
 
@@ -83,8 +84,8 @@ export class User {
       const password = cipher.generate(data.password);
 
       return new Promise((res, rej) => {
-        const sql = `INSERT INTO ${USER_TABLE} (email, password) VALUES(?, ?)`;
-        db.run(sql, [data.email, password], function (err) {
+        const sql = `INSERT INTO ${USER_TABLE} (email, token_email, password) VALUES(?, ?, ?)`;
+        db.run(sql, [data.email, data.token_email, password], function (err) {
           if (err) {
             rej(err);
           } else {
@@ -244,13 +245,13 @@ export class User {
  * url_img?: string,
  * active?: boolean,
  * token_email?: string,
+ * verified?: boolean,
  * }} TUser
  */
 
 /** Type response
  * @typedef {{
  * role?: string,
- * verified?: boolean,
  * updated_at?: string|Date,
  * created_at?: string,
  * message?: string
