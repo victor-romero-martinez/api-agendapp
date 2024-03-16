@@ -6,6 +6,10 @@ const PORT = process.env.PORT;
 const VERSION = process.env.API_VERSION;
 const HOST = process.env.URL_BASE;
 
+if (!PORT || !VERSION || !HOST) {
+  throw Error("Missing .env on Swagger");
+}
+
 /** Swagger options
  * @type {Swagger}
  */
