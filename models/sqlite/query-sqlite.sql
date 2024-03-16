@@ -1,4 +1,5 @@
--- SELECT * FROM users;
+-- SELECT * FROM user;
+-- SELECT * FROM team;
 -- DELETE FROM users WHERE id = 1 ;
 -- SELECT  id, email, user_name, url_img, role, active, verified, created_at, updated_at FROM users;
 -- SELECT id FROM users WHERE email = "ihadaufi@uf.bv"

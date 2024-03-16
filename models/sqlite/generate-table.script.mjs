@@ -1,66 +1,27 @@
 import { logHelper } from "../../utils/log-helper.mjs";
 import { db } from "./config/database.local.mjs";
 
-function generate() {
-  const createTableUser = `
-    CREATE TABLE IF NOT EXISTS users (
-      id          INTEGER PRIMARY KEY AUTOINCREMENT,
-      email       TEXT UNIQUE NOT NULL CHECK(length(email) <= 60),
-      password    TEXT NOT NULL CHECK(length(password) >= 4 AND length(password) <= 60),
-      user_name   TEXT CHECK(length(user_name) >= 2 AND length(user_name) <= 60),
-      url_img     TEXT,
-      role        NOT NULL DEFAULT user,
-      active      BOOLEAN NOT NULL DEFAULT true,
-      verified    BOOLEAN NOT NULL DEFAULT false,
-      token_email TEXT,
-      created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`;
+(() => {
+  const queries = [
+    "DROP TABLE IF EXISTS user;",
+    "DROP TABLE IF EXISTS dashboard;",
+    "DROP TABLE IF EXISTS task;",
+    "DROP TABLE IF EXISTS team;",
+    "CREATE TABLE user (id INTEGER PRIMARY KEY AUTOINCREMENT, user_name TEXT(60), email TEXT(255) NOT NULL UNIQUE, password TEXT(255) NOT NULL, role TEXT NOT NULL DEFAULT 'user', active BOOLEAN NOT NULL DEFAULT 1, verified BOOLEAN NOT NULL DEFAULT 0, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, token_email TEXT);",
+    "CREATE TABLE dashboard (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, owner_id INTEGER NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(owner_id) REFERENCES user(id));",
+    "CREATE TABLE task (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT(60) NOT NULL, description TEXT(255), status TEXT NOT NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, due_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, assigned_to INTEGER NOT NULL, dashboard_id INTEGER NOT NULL, FOREIGN KEY(assigned_to) REFERENCES user(id), FOREIGN KEY(dashboard_id) REFERENCES dashboard(id));",
+    "CREATE TABLE team (id INTEGER PRIMARY KEY AUTOINCREMENT, author_id INTEGER NOT NULL, members TEXT NOT NULL,  serán una lista de IDs de usuario role TEXT NOT NULL DEFAULT 'member', created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(author_id) REFERENCES user(id));",
+  ];
 
-  const createTableTasks = `
-    CREATE TABLE IF NOT EXISTS tasks (
-      id          INTEGER PRIMARY KEY AUTOINCREMENT,
-      title       TEXT NOT NULL CHECK(length(title) >= 3 AND length(title) <= 60),
-      description TEXT CHECK(length(description) <= 250),
-      status      TEXT NOT NULL DEFAULT pending,
-      priority    NUMBER NOT NULL DEFAULT 1,
-      author_id   INTEGER NOT NULL,
-      updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
-      created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
-      due_date    DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (author_id) REFERENCES users (id)
-    )`;
-
-  db.serialize(() => {
-    db.run(createTableUser, (err) => {
-      if (err) {
-        logHelper("error ☠", err);
-      }
-      logHelper("success 🎉", "Created table users");
-    })
-      .run(createTableTasks, (err) => {
+  queries.forEach((query) => {
+    db.serialize(() => {
+      db.run(query, (err) => {
         if (err) {
           logHelper("error ☠", err);
+        } else {
+          logHelper("success 🎉", "Query executed successfully");
         }
-        logHelper("success 🎉", "Created table tasks");
-      })
-      .close();
-  });
-}
-
-function drop() {
-  const tables = ["users", "tasks"];
-
-  tables.forEach((t) => {
-    const drop = `DROP TABLE IF EXISTS ${t}`;
-    db.run(drop, (err) => {
-      if (err) {
-        logHelper("error ☠", err);
-      }
-      logHelper("success 🎉", `Dropped tables ${t}`);
+      });
     });
   });
-}
-
-drop();
-generate();
+})();
