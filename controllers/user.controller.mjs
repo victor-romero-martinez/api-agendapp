@@ -1,8 +1,8 @@
 // @ts-check
 import "dotenv/config";
 import { emailSchema, userUpdatableSchema } from "../schemas/user.schema.mjs";
+import { isEmpty } from "../utils/check-isEmpty.mjs";
 import { Cipher } from "../utils/cipher.mjs";
-import { dateFormatter } from "../utils/dateFormatter.mjs";
 import { cat } from "../utils/httpcat.mjs";
 import { JwtToken } from "../utils/jwtToken.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
@@ -85,6 +85,13 @@ export class UserController {
       return res
         .status(cat["404_NOT_FOUND"])
         .json({ error: "Missing user email" });
+    }
+
+    const empty = isEmpty(req.body);
+    if (empty) {
+      return res
+        .status(cat["400_BAD_REQUEST"])
+        .json({ error: "Must be not empty body." });
     }
 
     const parse = userUpdatableSchema.safeParse(req.body);
