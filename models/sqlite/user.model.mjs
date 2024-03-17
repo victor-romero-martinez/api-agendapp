@@ -243,7 +243,7 @@ export class User {
  * user_name?: string,
  * url_img?: string,
  * active?: boolean,
- * token_email?: string,
+ * token_email?: string|null,
  * verified?: boolean,
  * }} TUser
  */

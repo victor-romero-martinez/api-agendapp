@@ -167,22 +167,31 @@ export class UserController {
   verifyEmail = async (req, res) => {
     const { token } = req.query;
     if (!token) {
-      return res.status(cat["404_NOT_FOUND"]).send("<h1>404 Not Found :(</h1>");
+      return res
+        .status(cat["404_NOT_FOUND"])
+        .send(
+          `<body style="margin: 0;font-family: &quot;system-ui&quot;, sans-serif;"><main style="display: flex;height: 100vh;justify-content: center;align-items: center;"><h1>404 Not Found :(</h1></main></body>`
+        );
     }
 
     /** @type {{ email: string }} */
     // @ts-ignore
     const decode = jwtToken.verify(token);
     if (!decode) {
-      return res.status(cat["404_NOT_FOUND"]).send("<h1>404 Not Found :(</h1>");
+      return res
+        .status(cat["404_NOT_FOUND"])
+        .send(
+          `<body style="margin: 0;font-family: &quot;system-ui&quot;, sans-serif;"><main style="display: flex;height: 100vh;justify-content: center;align-items: center;"><h1>404 Not Found :(</h1></main></body>`
+        );
     }
 
     try {
       const dbr = await this.userModel.updateUser(
-        { verified: true },
+        { verified: true, token_email: null },
         decode.email
       );
-      res.json(dbr);
+      res.send(`<body style="margin: 0;font-family: &quot;system-ui&quot;, sans-serif;"><main style="display: flex;height: 100vh;justify-content: center;align-items: center;flex-direction: column;"><h1>Congratulations 🎉</h1>
+      <p>Your account ${dbr.email} is successfully verify.</p></main></body>`);
     } catch (error) {
       logHelper("error ☠", error);
       res
