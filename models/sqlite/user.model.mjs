@@ -158,7 +158,7 @@ export class User {
 
       return new Promise((res, rej) => {
         // const sql = `DELETE FROM ${TABLE} WHERE id = ?`;
-        const sql = `UPDATE ${USER_TABLE} SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+        const sql = `UPDATE ${USER_TABLE} SET active = false, verified = false, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
         db.run(sql, [userId.id], function (err) {
           if (err) {
             rej(err);
