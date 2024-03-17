@@ -2,7 +2,6 @@
 import "dotenv/config";
 import { emailSchema, userUpdatableSchema } from "../schemas/user.schema.mjs";
 import { isEmpty } from "../utils/check-isEmpty.mjs";
-import { Cipher } from "../utils/cipher.mjs";
 import { cat } from "../utils/httpcat.mjs";
 import { JwtToken } from "../utils/jwtToken.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
@@ -14,7 +13,6 @@ if (!SECRET || !JWT_SECRET) {
   throw Error("Missing .env");
 }
 
-const cipher = new Cipher(SECRET);
 const jwtToken = new JwtToken(JWT_SECRET);
 
 /** User controller */

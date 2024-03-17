@@ -29,8 +29,8 @@ POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "ihco@weje.pk",
-  "password": "ihco@"
+  "email": "dabtut@jiufahu.mr",
+  "password": "dabtut"
 }
 
 ### get session

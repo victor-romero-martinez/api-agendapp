@@ -6,7 +6,7 @@ import { placeholderQuery } from "../../utils/slq-placeholder.mjs";
 
 const SECRET = process.env.SECRET;
 /** Name of the table */
-export const USER_TABLE = "users";
+export const USER_TABLE = "user";
 
 if (!SECRET) throw Error("Missing cipher secret .env");
 const cipher = new Cipher(SECRET);
