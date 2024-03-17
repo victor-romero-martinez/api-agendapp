@@ -1,5 +1,5 @@
-import { logHelper } from "../../utils/log-helper.mjs";
-import { db } from "./config/database.local.mjs";
+import { logHelper } from "../../../utils/log-helper.mjs";
+import { db } from "./database.local.mjs";
 
 (() => {
   const queries = [

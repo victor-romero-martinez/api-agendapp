@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest --watch test/functional.test.mjs ",
-    "generate:local": "node models/sqlite/generate-table.script.mjs",
+    "generate:local": "node models/sqlite/config/generate-table.script.mjs",
     "dev:sqlite3": "node --watch server-with-sqlite3.mjs"
   },
   "keywords": [],
