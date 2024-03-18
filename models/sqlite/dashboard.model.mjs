@@ -3,7 +3,7 @@ import { db } from "./config/database.local.mjs";
 import { USER_TABLE } from "./user.model.mjs";
 
 /** Name of table */
-const DASHBOARD_TABLE = "dashboard";
+export const DASHBOARD_TABLE = "dashboard";
 
 /** Dashboard model SQLite */
 export class Dashboard {
