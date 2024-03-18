@@ -1,17 +1,18 @@
 //@ts-check
 import { placeholderQuery } from "../../utils/slq-placeholder.mjs";
 import { db } from "./config/database.local.mjs";
+import { DASHBOARD_TABLE } from "./dashboard.model.mjs";
 import { USER_TABLE } from "./user.model.mjs";
 
 /** Name of table */
-const TASK_TABLE = "tasks";
+const TASK_TABLE = "task";
 
 /** Tasks model SQLite */
 export class Task {
   /** Get all tasks
    * @returns {Promise<Array<TTask&TResponse>>}
    */
-  findAllTasks() {
+  findAll() {
     return new Promise((res, rej) => {
       const sql = `SELECT * FROM ${TASK_TABLE}`;
       db.all(sql, [], (err, rows) => {
@@ -28,7 +29,7 @@ export class Task {
    * @param {number} id
    * @returns {Promise<Array<TTask&TResponse>>}
    */
-  findTasksByAuthorId(id) {
+  findByAuthorId(id) {
     return new Promise((res, rej) => {
       const sql = `SELECT * FROM ${TASK_TABLE} WHERE author_id = ?`;
       db.all(sql, [id], (err, rows) => {
@@ -45,7 +46,7 @@ export class Task {
    * @param {number} id
    * @returns {Promise<TTask&TResponse>}
    */
-  getTaskById(id) {
+  getById(id) {
     return new Promise((res, rej) => {
       const sql = `SELECT * FROM ${TASK_TABLE} WHERE id = ?`;
       db.get(sql, [id], (err, row) => {
@@ -63,14 +64,20 @@ export class Task {
    * @param {string} email
    * @returns {Promise<TTask&TResponse>}
    */
-  async createNewTask(data, email) {
+  async create(data, email) {
     try {
-      const authorId = await this.#getAuthorID(email);
-      if (!authorId) return { message: "User does not exist." };
+      const author = await this.#getAuthorID(email);
+      if (!author) return { message: "User does not exist." };
 
-      const newData = { ...data, author_id: authorId.id };
+      // @ts-ignore
+      const owner = await this.#findDashboardById(data.dashboard_id);
+      if (!owner) return { message: "Dashboard does not exists." };
 
-      const placeholder = placeholderQuery(newData);
+      if (author.id !== owner.owner_id) {
+        return { message: "Forbidden." };
+      }
+
+      const placeholder = placeholderQuery(data);
 
       const sql = `INSERT INTO ${TASK_TABLE} (${
         placeholder[0]
@@ -98,12 +105,12 @@ export class Task {
     }
   }
 
-  /** Update a task
+  /** Update a task [TODO] feature to change of dashboard
    * @param {TTask} data
    * @param {string} email
    * @returns {Promise<TTask&TResponse>}
    */
-  async updateTask(data, email) {
+  async update(data, email) {
     try {
       const authorId = await this.#getAuthorID(email);
 
@@ -146,7 +153,7 @@ export class Task {
    * @param {string} email - Id of author
    * @returns {Promise<TTask&TResponse>}
    */
-  async deleteTask(taskId, email) {
+  async delete(taskId, email) {
     try {
       const authorId = await this.#getAuthorID(email);
 
@@ -206,6 +213,23 @@ export class Task {
       });
     });
   }
+
+  /** Find owner id of dashboard
+   * @param {number} id
+   * @returns {Promise<{owner_id: number}>}
+   */
+  #findDashboardById(id) {
+    return new Promise((res, rej) => {
+      const sql = `SELECT owner_id FROM ${DASHBOARD_TABLE} WHERE id = ?`;
+      db.get(sql, [id], (err, row) => {
+        if (err) {
+          rej(err);
+        } else {
+          res(row);
+        }
+      });
+    });
+  }
 }
 
 /** Type input
@@ -213,9 +237,10 @@ export class Task {
  *  id?: number,
  *  title?: string,
  *  description?: string|null,
- *  status?: string,
  *  priority?: number,
+ *  color?: string,
  *  due_date?: string,
+ *  dashboard_id?: number
  * }} TTask
  */
 

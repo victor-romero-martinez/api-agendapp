@@ -21,7 +21,7 @@ export class TaskController {
   getAll = async (req, res) => {
     if (!req.query?.author_id) {
       try {
-        const dbr = await this.taskModel.findAllTasks();
+        const dbr = await this.taskModel.findAll();
         res.json(dbr);
       } catch (error) {
         logHelper("error ☠", error);
@@ -39,7 +39,7 @@ export class TaskController {
           .json({ error: "id Must be a number" });
       }
       try {
-        const dbr = await this.taskModel.findTasksByAuthorId(id);
+        const dbr = await this.taskModel.findByAuthorId(id);
         res.json(dbr);
       } catch (error) {
         logHelper("error ☠", error);
@@ -64,7 +64,7 @@ export class TaskController {
     }
 
     try {
-      const dbr = await this.taskModel.getTaskById(id);
+      const dbr = await this.taskModel.getById(id);
 
       if (!dbr) {
         return res
@@ -101,9 +101,13 @@ export class TaskController {
     }
 
     try {
-      const dbr = await this.taskModel.createNewTask(reqData.data, email);
+      const dbr = await this.taskModel.create(reqData.data, email);
       if (dbr.message === "User does not exist.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Dashboard does not exists.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Forbidden.") {
+        res.status(cat["403_FORBIDDEN"]).json(dbr);
       } else {
         res.status(cat["201_CREATED"]).json(dbr);
       }
@@ -138,7 +142,7 @@ export class TaskController {
     };
 
     try {
-      const dbr = await this.taskModel.updateTask(newData, email);
+      const dbr = await this.taskModel.update(newData, email);
 
       if (dbr.message === "User does not exists.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
@@ -175,7 +179,7 @@ export class TaskController {
         .json({ error: "Missing email token." });
     }
     try {
-      const dbr = await this.taskModel.deleteTask(+id, email);
+      const dbr = await this.taskModel.delete(+id, email);
 
       if (dbr.message === "User does not exist.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
