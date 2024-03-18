@@ -20,7 +20,7 @@ export class DashboardController {
    * @param {import('express').Request} req
    * @param {import('express').Response} res
    */
-  findAllByEmail = async (req, res) => {
+  groupByEmail = async (req, res) => {
     /** @type {{ email: string }} */
     // @ts-ignore
     const { email } = req.decode;
@@ -31,7 +31,7 @@ export class DashboardController {
     }
 
     try {
-      const dbr = await this.dashboardModel.findDashboardByEmail(email);
+      const dbr = await this.dashboardModel.groupByEmail(email);
       if (dbr.message === "User does not exists.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else {
@@ -49,7 +49,7 @@ export class DashboardController {
    * @param {import('express').Request} req
    * @param {import('express').Response} res
    */
-  createNewDashboard = async (req, res) => {
+  create = async (req, res) => {
     /** @type {{ email: string }} */
     // @ts-ignore
     const { email } = req.decode;
@@ -65,10 +65,7 @@ export class DashboardController {
     }
 
     try {
-      const dbr = await this.dashboardModel.createDashboard(
-        reqData.data,
-        email
-      );
+      const dbr = await this.dashboardModel.create(reqData.data, email);
       if (dbr.message === "User does not exists.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else {
@@ -86,7 +83,7 @@ export class DashboardController {
    * @param {import('express').Request} req
    * @param {import('express').Response} res
    */
-  updateDashboard = async (req, res) => {
+  update = async (req, res) => {
     /** @type {{ email: string }} */
     // @ts-ignore
     const { email } = req.decode;
@@ -113,6 +110,45 @@ export class DashboardController {
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Error updating dashboard." });
+    }
+  };
+
+  /** Delete a dashboard
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   */
+  delete = async (req, res) => {
+    /** @type {{ email: string }} */
+    // @ts-ignore
+    const { email } = req.decode;
+    if (!email) {
+      return res
+        .status(cat["400_BAD_REQUEST"])
+        .json({ error: "Missing email." });
+    }
+
+    const idQuery = req.query?.id;
+    if (!idQuery) {
+      return res
+        .status(cat["400_BAD_REQUEST"])
+        .json({ error: "Missing id query." });
+    }
+
+    try {
+      const id = +idQuery;
+      const dbr = await this.dashboardModel.delete({ email, id });
+      if (dbr.message === "User does not exists.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Dashboard does not exists.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else {
+        res.json(dbr);
+      }
+    } catch (error) {
+      logHelper("error ☠", error);
+      res
+        .status(cat["500_INTERNAL_SERVER_ERROR"])
+        .json({ error: "Internal Server Error." });
     }
   };
 }

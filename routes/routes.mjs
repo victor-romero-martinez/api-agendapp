@@ -465,17 +465,10 @@ export const appRouter = ({ userModel, taskModel, dashboardModel }) => {
   router.delete("/task", jwtMiddleware, taskController.deleteTask);
 
   //  Dashboard
-  router.get("/dashboard", jwtMiddleware, dashboardController.findAllByEmail);
-  router.put(
-    "/dashboard",
-    jwtMiddleware,
-    dashboardController.createNewDashboard
-  );
-  router.patch(
-    "/dashboard",
-    jwtMiddleware,
-    dashboardController.updateDashboard
-  );
+  router.get("/dashboard", jwtMiddleware, dashboardController.groupByEmail);
+  router.put("/dashboard", jwtMiddleware, dashboardController.create);
+  router.patch("/dashboard", jwtMiddleware, dashboardController.update);
+  router.delete("/dashboard", jwtMiddleware, dashboardController.delete);
 
   router.get("/verify", userController.verifyEmail);
 
