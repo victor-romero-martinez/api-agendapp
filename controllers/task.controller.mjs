@@ -54,7 +54,7 @@ export class TaskController {
    * @param {import('express').Request} req
    * @param {import('express').Response} res
    * */
-  getTaskById = async (req, res) => {
+  getById = async (req, res) => {
     const id = +req.params.id;
 
     if (isNaN(id)) {
@@ -85,7 +85,7 @@ export class TaskController {
    * @param {import('express').Request} req
    * @param {import('express').Response} res
    * */
-  createTask = async (req, res) => {
+  create = async (req, res) => {
     const reqData = taskSchema.safeParse(req.body);
 
     /** @type {{email: string}} */
@@ -119,7 +119,7 @@ export class TaskController {
    * @param {import('express').Request} req
    * @param {import('express').Response} res
    * */
-  updateTask = async (req, res) => {
+  update = async (req, res) => {
     const reqData = taskEditable.safeParse(req.body);
     /** @type {{ email: string }} */
     // @ts-ignore
@@ -159,7 +159,7 @@ export class TaskController {
    * @param {import('express').Request} req
    * @param {import('express').Response} res
    */
-  deleteTask = async (req, res) => {
+  delete = async (req, res) => {
     const { id } = req.query;
     /** @type {{ email: string }} */
     // @ts-ignore

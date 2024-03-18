@@ -338,7 +338,7 @@ export const appRouter = ({ userModel, taskModel, dashboardModel }) => {
    *      500:
    *        description: Internal Sever Error.
    */
-  router.get("/task/:id", taskController.getTaskById);
+  router.get("/task/:id", taskController.getById);
   /**
    * @swagger
    * /task:
@@ -393,7 +393,7 @@ export const appRouter = ({ userModel, taskModel, dashboardModel }) => {
    *        description: Internal Server Error.
    *
    */
-  router.post("/task", jwtMiddleware, taskController.createTask);
+  router.post("/task", jwtMiddleware, taskController.create);
   /**
    * @swagger
    * /task:
@@ -426,7 +426,7 @@ export const appRouter = ({ userModel, taskModel, dashboardModel }) => {
    *      500:
    *        description: Internal Sever Error.
    */
-  router.patch("/task", jwtMiddleware, taskController.updateTask);
+  router.patch("/task", jwtMiddleware, taskController.update);
   /**
    * @swagger
    * /task:
@@ -462,7 +462,7 @@ export const appRouter = ({ userModel, taskModel, dashboardModel }) => {
    *      500:
    *        description: Internal Server Error.
    */
-  router.delete("/task", jwtMiddleware, taskController.deleteTask);
+  router.delete("/task", jwtMiddleware, taskController.delete);
 
   //  Dashboard
   router.get("/dashboard", jwtMiddleware, dashboardController.groupByEmail);
