@@ -11,10 +11,11 @@ import { logHelper } from "./utils/log-helper.mjs";
 /** App index
  * @param {{
  * userModel: import('./models/sqlite/user.model.mjs').User,
- * taskModel: import('./models/sqlite/tasks.model.mjs').Task
+ * taskModel: import('./models/sqlite/tasks.model.mjs').Task,
+ * dashboardModel: import('./models/sqlite/dashboard.model.mjs').Dashboard
  * }} param
  */
-export const createApp = ({ userModel, taskModel }) => {
+export const createApp = ({ userModel, taskModel, dashboardModel }) => {
   const app = express();
 
   const PORT = process.env.PORT ?? 3000;
@@ -26,7 +27,10 @@ export const createApp = ({ userModel, taskModel }) => {
   app.use(cookieParser());
   app.use(corsMiddleware());
 
-  app.use(`/api/${VERSION}`, appRouter({ userModel, taskModel }));
+  app.use(
+    `/api/${VERSION}`,
+    appRouter({ userModel, taskModel, dashboardModel })
+  );
   app.use(`/api/${VERSION}/docs`, swaggerUI.serve, swaggerUI.setup(specs));
 
   app.listen(PORT, () => {

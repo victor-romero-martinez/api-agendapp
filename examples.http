@@ -38,8 +38,8 @@ POST  http://localhost:3000/api/v1/signing
 Content-Type: application/json
 
 {
-  "email": "fidum@acidu.cv",
-  "password": "123456"
+  "email": "dabtut@jiufahu.mr",
+  "password": "dabtut"
 }
 
 ### signout session
@@ -78,3 +78,24 @@ Content-Type: application/json
 
 ### delete a task
 DELETE http://localhost:3000/api/v1/task?id=5
+
+### DASHBOARD
+# Get dashboard by email only session
+GET http://localhost:3000/api/v1/dashboard
+
+### Create a new dashboard
+PUT http://localhost:3000/api/v1/dashboard
+Content-Type: application/json
+
+{
+  "name": "test"
+}
+
+### Update a dashboard
+PATCH  http://localhost:3000/api/v1/dashboard
+Content-Type: application/json
+
+{
+  "id": 2,
+  "name": "i'm genius !!"
+}

@@ -92,19 +92,22 @@ import { AuthController } from "../controllers/auth.controller.mjs";
 import { TaskController } from "../controllers/task.controller.mjs";
 import { UserController } from "../controllers/user.controller.mjs";
 import jwtMiddleware from "../middlewares/jwt.middleware.mjs";
+import { DashboardController } from "../controllers/dashboard.controller.mjs";
 
 /** App router
  * @param {{
  * userModel: import('../models/sqlite/user.model.mjs').User,
- * taskModel: import('../models/sqlite/tasks.model.mjs').Task
+ * taskModel: import('../models/sqlite/tasks.model.mjs').Task,
+ * dashboardModel: import('../models/sqlite/dashboard.model.mjs').Dashboard
  * }} param
  */
-export const appRouter = ({ userModel, taskModel }) => {
+export const appRouter = ({ userModel, taskModel, dashboardModel }) => {
   const router = Router();
 
   const authController = new AuthController({ userModel });
   const userController = new UserController({ userModel });
   const taskController = new TaskController({ taskModel });
+  const dashboardController = new DashboardController({ dashboardModel });
 
   /**
    * @swagger
@@ -460,6 +463,19 @@ export const appRouter = ({ userModel, taskModel }) => {
    *        description: Internal Server Error.
    */
   router.delete("/task", jwtMiddleware, taskController.deleteTask);
+
+  //  Dashboard
+  router.get("/dashboard", jwtMiddleware, dashboardController.findAllByEmail);
+  router.put(
+    "/dashboard",
+    jwtMiddleware,
+    dashboardController.createNewDashboard
+  );
+  router.patch(
+    "/dashboard",
+    jwtMiddleware,
+    dashboardController.updateDashboard
+  );
 
   router.get("/verify", userController.verifyEmail);
 
