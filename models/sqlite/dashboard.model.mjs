@@ -17,7 +17,7 @@ export class Dashboard {
       }
 
       return new Promise((res, rej) => {
-        const sql = `SELECT * FROM dashboard WHERE id = ?;`;
+        const sql = `SELECT * FROM dashboard WHERE owner_id = ?;`;
         db.all(sql, [userId.id], (err, rows) => {
           if (err) {
             rej(err);
