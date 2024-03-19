@@ -1,4 +1,5 @@
 //@ts-check
+import { randomColor } from "../../utils/random-color.mjs";
 import { placeholderQuery } from "../../utils/slq-placeholder.mjs";
 import { db } from "./config/database.local.mjs";
 import { DASHBOARD_TABLE } from "./dashboard.model.mjs";
@@ -81,7 +82,8 @@ export class Task {
         return { message: "Forbidden." };
       }
 
-      const placeholder = placeholderQuery(data);
+      const newData = { ...data, color: randomColor() };
+      const placeholder = placeholderQuery(newData);
 
       const sql = `INSERT INTO ${TASK_TABLE} (${
         placeholder[0]
