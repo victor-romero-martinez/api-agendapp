@@ -116,9 +116,11 @@ export class Task {
    */
   async update(data, email) {
     try {
+      /** task */
       // @ts-ignore
       const isExist = await this.#checkTask(data.id);
-      if (isExist.result == false) return { message: "Task does not exists." };
+
+      if (!isExist) return { message: "Task does not exists." };
 
       const author = await this.#getAuthorID(email);
       if (!author) return { message: "User does not exists." };
@@ -127,7 +129,10 @@ export class Task {
       const dashboard = await this.#findDashboardById(data.dashboard_id);
       if (!dashboard) return { message: "Dashboard does not exists." };
 
-      if (author.id !== dashboard.owner_id) {
+      if (
+        author.id !== dashboard.owner_id ||
+        isExist.dashboard_id !== dashboard.id
+      ) {
         return { message: "Forbidden." };
       }
 
@@ -136,9 +141,9 @@ export class Task {
 
       return new Promise((res, rej) => {
         const placeholder = placeholderQuery(newData, "UPDATE");
-        const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]}, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND dashboard_id = ?`;
+        const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
 
-        db.run(sql, [...placeholder[1], id, dashboard.id], function (err) {
+        db.run(sql, [...placeholder[1], id], function (err) {
           if (err) {
             rej(err);
           } else {
@@ -166,7 +171,7 @@ export class Task {
   async delete(taskId, email) {
     try {
       const isExist = await this.#checkTask(taskId);
-      if (isExist.result == false) return { message: "Task does not exists." };
+      if (!isExist.id) return { message: "Task does not exists." };
 
       const authorId = await this.#getAuthorID(email);
       if (!authorId) return { message: "User does not exists." };
@@ -205,11 +210,11 @@ export class Task {
 
   /** Check task is exist
    * @param {number} idTask
-   * @returns {Promise<{result: boolean}>}
+   * @returns {Promise<TTask&TResponse>}
    */
   #checkTask(idTask) {
     return new Promise((res, rej) => {
-      const checkSql = `SELECT EXISTS (SELECT * FROM task WHERE id = ?) AS result;`;
+      const checkSql = `SELECT * FROM task WHERE id = ?;`;
 
       db.get(checkSql, [idTask], (err, row) => {
         if (err) {
@@ -254,8 +259,7 @@ export class Task {
 /** Type Response
  * @typedef {{
  *  updated_at?: string,
- *  created_at?: string
- *  author_id?: number,
+ *  created_at?: string,
  *  message?: string
  * }} TResponse
  */
