@@ -135,19 +135,17 @@ export class TaskController {
       return res.status(cat["404_NOT_FOUND"]).json({ error: "Missing Email" });
     }
 
-    const updated_at = dateFormatter();
-    const newData = {
-      updated_at,
-      ...reqData.data,
-    };
-
     try {
-      const dbr = await this.taskModel.update(newData, email);
+      const dbr = await this.taskModel.update(reqData.data, email);
 
-      if (dbr.message === "User does not exists.") {
+      if (dbr.message === "Task does not exists.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
-      } else if (dbr.message === "Unauthorize.") {
-        res.status(cat["401_UNAUTHORIZED"]).json(dbr);
+      } else if (dbr.message === "User does not exists.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Dashboard does not exists.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Forbidden.") {
+        res.status(cat["403_FORBIDDEN"]).json(dbr);
       } else {
         res.json(dbr);
       }

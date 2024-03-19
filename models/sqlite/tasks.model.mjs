@@ -30,16 +30,20 @@ export class Task {
    * @returns {Promise<Array<TTask&TResponse>>}
    */
   findByAuthorId(id) {
-    return new Promise((res, rej) => {
-      const sql = `SELECT * FROM ${TASK_TABLE} WHERE author_id = ?`;
-      db.all(sql, [id], (err, rows) => {
-        if (err) {
-          rej(err);
-        } else {
-          res(rows);
-        }
+    try {
+      return new Promise((res, rej) => {
+        const sql = `SELECT * FROM ${TASK_TABLE} WHERE dashboard_id = (SELECT id FROM ${DASHBOARD_TABLE} WHERE owner_id = ?)`;
+        db.all(sql, [id], (err, rows) => {
+          if (err) {
+            rej(err);
+          } else {
+            res(rows);
+          }
+        });
       });
-    });
+    } catch (error) {
+      throw error;
+    }
   }
 
   /** Get a task by id
@@ -112,23 +116,29 @@ export class Task {
    */
   async update(data, email) {
     try {
-      const authorId = await this.#getAuthorID(email);
+      // @ts-ignore
+      const isExist = await this.#checkTask(data.id);
+      if (isExist.result == false) return { message: "Task does not exists." };
 
-      if (!authorId) return { message: "User does not exists." };
-      if (!data.id) return { message: "Task does not exists." };
+      const author = await this.#getAuthorID(email);
+      if (!author) return { message: "User does not exists." };
 
-      const checkSql = await this.#checkAuthor(data.id, authorId.id);
+      // @ts-ignore
+      const dashboard = await this.#findDashboardById(data.dashboard_id);
+      if (!dashboard) return { message: "Dashboard does not exists." };
 
-      if (!checkSql) return { message: "Unauthorize." };
+      if (author.id !== dashboard.owner_id) {
+        return { message: "Forbidden." };
+      }
 
       // split id and data
       const { id, ...newData } = data;
 
       return new Promise((res, rej) => {
         const placeholder = placeholderQuery(newData, "UPDATE");
-        const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+        const sql = `UPDATE ${TASK_TABLE} SET ${placeholder[0]}, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND dashboard_id = ?`;
 
-        db.run(sql, [...placeholder[1], id], function (err) {
+        db.run(sql, [...placeholder[1], id, dashboard.id], function (err) {
           if (err) {
             rej(err);
           } else {
@@ -148,23 +158,21 @@ export class Task {
     }
   }
 
+  // * @returns {Promise<TTask&TResponse>}
   /** Delete a task
    * @param {number} taskId - Id of tasks
    * @param {string} email - Id of author
-   * @returns {Promise<TTask&TResponse>}
    */
   async delete(taskId, email) {
     try {
-      const authorId = await this.#getAuthorID(email);
+      const isExist = await this.#checkTask(taskId);
+      if (isExist.result == false) return { message: "Task does not exists." };
 
+      const authorId = await this.#getAuthorID(email);
       if (!authorId) return { message: "User does not exists." };
 
-      const checkSql = await this.#checkAuthor(taskId, authorId.id);
-
-      if (!checkSql) return { message: "Unauthorize." };
-
       return new Promise((res, rej) => {
-        const sql = `DELETE FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
+        const sql = `DELETE FROM ${TASK_TABLE} WHERE id = ? AND dashboard_id = (SELECT id FROM ${DASHBOARD_TABLE} WHERE owner_id = ?);`;
         db.run(sql, [taskId, authorId.id], (err) => {
           if (err) {
             rej(err);
@@ -195,16 +203,15 @@ export class Task {
     });
   }
 
-  /** Check author of task
+  /** Check task is exist
    * @param {number} idTask
-   * @param {number} idAuthor
-   * @returns {Promise<{title:string}>}
+   * @returns {Promise<{result: boolean}>}
    */
-  #checkAuthor(idTask, idAuthor) {
+  #checkTask(idTask) {
     return new Promise((res, rej) => {
-      const checkSql = `SELECT title FROM ${TASK_TABLE} WHERE id = ? AND author_id = ?`;
+      const checkSql = `SELECT EXISTS (SELECT * FROM task WHERE id = ?) AS result;`;
 
-      db.get(checkSql, [idTask, idAuthor], (err, row) => {
+      db.get(checkSql, [idTask], (err, row) => {
         if (err) {
           rej(err);
         } else {
@@ -214,13 +221,13 @@ export class Task {
     });
   }
 
-  /** Find owner id of dashboard
+  /** Find owner_id and id of dashboard
    * @param {number} id
-   * @returns {Promise<{owner_id: number}>}
+   * @returns {Promise<{id: number, owner_id: number}>}
    */
   #findDashboardById(id) {
     return new Promise((res, rej) => {
-      const sql = `SELECT owner_id FROM ${DASHBOARD_TABLE} WHERE id = ?`;
+      const sql = `SELECT owner_id, id FROM ${DASHBOARD_TABLE} WHERE id = ?`;
       db.get(sql, [id], (err, row) => {
         if (err) {
           rej(err);
