@@ -84,9 +84,11 @@ export class Dashboard {
 
       return new Promise((res, rej) => {
         const sql = `SELECT owner_id FROM ${DASHBOARD_TABLE} WHERE id = ?;`;
-        db.get(sql, [author.id], (err, row) => {
+        db.get(sql, [data.id], (err, row) => {
           if (err) {
             rej(err);
+          } else if (!row) {
+            res({ message: "Forbidden." });
           } else if (author.id !== row.owner_id) {
             res({ message: "Unauthorized." });
           } else {

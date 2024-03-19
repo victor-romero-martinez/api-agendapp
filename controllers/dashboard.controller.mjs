@@ -102,6 +102,8 @@ export class DashboardController {
       const dbr = await this.dashboardModel.update(reqData.data, email);
       if (dbr.message === "User does not exists.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Forbidden.") {
+        res.status(cat["403_FORBIDDEN"]).json(dbr);
       } else {
         res.json(dbr);
       }
