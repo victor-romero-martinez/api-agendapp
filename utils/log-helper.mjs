@@ -4,5 +4,7 @@
  * @param {any} [mjs] - Log message
  */
 export function logHelper(type, mjs) {
-  console.log(`${type}, ${mjs}`);
+  console.trace(type);
+  console.log("-".repeat(20));
+  console.log(mjs);
 }
