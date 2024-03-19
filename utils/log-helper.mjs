@@ -9,6 +9,6 @@ export function logHelper(type, mjs) {
     console.log("-".repeat(20));
     console.log(mjs);
   } else {
-    console.log(type);
+    console.log(`${type}-- ${mjs}`);
   }
 }
