@@ -27,9 +27,13 @@ export class TeamController {
 
     try {
       const dbr = await this.teamModel.get(email);
+
+      // @ts-ignore
+      dbr.map((d) => (d.members = JSON.parse(d.members)));
+
       res.json(dbr);
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error, "error ☠");
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error." });
@@ -44,10 +48,11 @@ export class TeamController {
     /** @type {{ email: string }} */
     // @ts-ignore
     const { email } = req.decode;
-    if (!email)
+    if (!email) {
       return res
         .status(cat["400_BAD_REQUEST"])
         .json({ error: "Missing email" });
+    }
 
     const reqData = teamSchema.safeParse(req.body);
     if (!reqData.success) {
@@ -58,7 +63,44 @@ export class TeamController {
       const dbr = await this.teamModel.create(reqData.data.members, email);
       res.status(cat["201_CREATED"]).json(dbr);
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error, "error ☠");
+      res
+        .status(cat["500_INTERNAL_SERVER_ERROR"])
+        .json({ error: "Internal Server Error." });
+    }
+  };
+
+  /** Delete a Team
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   */
+  delete = async (req, res) => {
+    /** @type {{ email: string }} */
+    // @ts-ignore
+    const { email } = req.decode;
+    if (!email) {
+      return res
+        .status(cat["400_BAD_REQUEST"])
+        .json({ error: "Missing email" });
+    }
+
+    const { id } = req.query;
+    if (!id) {
+      return res.status(cat["400_BAD_REQUEST"]).json({ error: "Missing id" });
+    }
+
+    try {
+      const dbr = await this.teamModel.delete({ id: +id }, email);
+
+      if (dbr.message === "Team does not exists.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else if (dbr.message === "Unauthorized.") {
+        res.status(cat["401_UNAUTHORIZED"]).json(dbr);
+      } else {
+        res.json(dbr);
+      }
+    } catch (error) {
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error." });

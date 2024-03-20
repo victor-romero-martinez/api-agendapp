@@ -42,7 +42,7 @@ export class TaskController {
         const dbr = await this.taskModel.findByAuthorId(id);
         res.json(dbr);
       } catch (error) {
-        logHelper("error ☠", error);
+        logHelper(error);
         res
           .status(cat["500_INTERNAL_SERVER_ERROR"])
           .json({ error: "Internal Server error." });
@@ -74,7 +74,7 @@ export class TaskController {
 
       res.json(dbr);
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error" });
@@ -112,7 +112,7 @@ export class TaskController {
         res.status(cat["201_CREATED"]).json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Error to create task" });
@@ -150,7 +150,7 @@ export class TaskController {
         res.json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server error" });
@@ -187,7 +187,7 @@ export class TaskController {
         res.json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Sever Error." });

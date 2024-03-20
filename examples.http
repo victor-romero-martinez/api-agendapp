@@ -110,9 +110,12 @@ DELETE  http://localhost:3000/api/v1/dashboard?id=4
 GET http://localhost:3000/api/v1/team
 
 ### create a team
-POST  http://localhost:3000/api/v1/team
+POST http://localhost:3000/api/v1/team
 Content-Type: application/json
 
 {
   "members": [1, 2, 3, 5]
 }
+
+### Delete a team. need session!
+DELETE  http://localhost:3000/api/v1/team?id=2

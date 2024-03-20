@@ -481,6 +481,7 @@ export const appRouter = ({
   // Team
   router.get("/team", jwtMiddleware, teamController.getTeam);
   router.post("/team", jwtMiddleware, teamController.create);
+  router.delete("/team", jwtMiddleware, teamController.delete);
 
   router.get("/verify", userController.verifyEmail);
 
