@@ -12,10 +12,16 @@ import { logHelper } from "./utils/log-helper.mjs";
  * @param {{
  * userModel: import('./models/sqlite/user.model.mjs').User,
  * taskModel: import('./models/sqlite/tasks.model.mjs').Task,
- * dashboardModel: import('./models/sqlite/dashboard.model.mjs').Dashboard
+ * dashboardModel: import('./models/sqlite/dashboard.model.mjs').Dashboard,
+ * teamModel: import('./models/sqlite/team.model.mjs').Team
  * }} param
  */
-export const createApp = ({ userModel, taskModel, dashboardModel }) => {
+export const createApp = ({
+  userModel,
+  taskModel,
+  dashboardModel,
+  teamModel,
+}) => {
   const app = express();
 
   const PORT = process.env.PORT ?? 3000;
@@ -29,7 +35,7 @@ export const createApp = ({ userModel, taskModel, dashboardModel }) => {
 
   app.use(
     `/api/${VERSION}`,
-    appRouter({ userModel, taskModel, dashboardModel })
+    appRouter({ userModel, taskModel, dashboardModel, teamModel })
   );
   app.use(`/api/${VERSION}/docs`, swaggerUI.serve, swaggerUI.setup(specs));
 

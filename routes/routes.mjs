@@ -89,25 +89,33 @@
 //@ts-check
 import { Router } from "express";
 import { AuthController } from "../controllers/auth.controller.mjs";
+import { DashboardController } from "../controllers/dashboard.controller.mjs";
 import { TaskController } from "../controllers/task.controller.mjs";
+import { TeamController } from "../controllers/team.controller.mjs";
 import { UserController } from "../controllers/user.controller.mjs";
 import jwtMiddleware from "../middlewares/jwt.middleware.mjs";
-import { DashboardController } from "../controllers/dashboard.controller.mjs";
 
 /** App router
  * @param {{
  * userModel: import('../models/sqlite/user.model.mjs').User,
  * taskModel: import('../models/sqlite/tasks.model.mjs').Task,
- * dashboardModel: import('../models/sqlite/dashboard.model.mjs').Dashboard
+ * dashboardModel: import('../models/sqlite/dashboard.model.mjs').Dashboard,
+ * teamModel: import('../models/sqlite/team.model.mjs').Team
  * }} param
  */
-export const appRouter = ({ userModel, taskModel, dashboardModel }) => {
+export const appRouter = ({
+  userModel,
+  taskModel,
+  dashboardModel,
+  teamModel,
+}) => {
   const router = Router();
 
   const authController = new AuthController({ userModel });
   const userController = new UserController({ userModel });
   const taskController = new TaskController({ taskModel });
   const dashboardController = new DashboardController({ dashboardModel });
+  const teamController = new TeamController({ teamModel });
 
   /**
    * @swagger
@@ -469,6 +477,10 @@ export const appRouter = ({ userModel, taskModel, dashboardModel }) => {
   router.put("/dashboard", jwtMiddleware, dashboardController.create);
   router.patch("/dashboard", jwtMiddleware, dashboardController.update);
   router.delete("/dashboard", jwtMiddleware, dashboardController.delete);
+
+  // Team
+  router.get("/team", jwtMiddleware, teamController.getTeam);
+  router.post("/team", jwtMiddleware, teamController.create);
 
   router.get("/verify", userController.verifyEmail);
 
