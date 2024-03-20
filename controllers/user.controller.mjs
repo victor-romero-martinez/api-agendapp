@@ -34,7 +34,7 @@ export class UserController {
       const dbr = await this.userModel.findAllUser();
       res.json(dbr);
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error" });
@@ -63,7 +63,7 @@ export class UserController {
 
       res.json(dbr);
     } catch (e) {
-      logHelper("error ☠", e);
+      logHelper(e);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error" });
@@ -115,7 +115,7 @@ export class UserController {
           .json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error." });
@@ -153,7 +153,7 @@ export class UserController {
         res.cookie("token", "", { expires: new Date(0) }).json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error." });
@@ -193,7 +193,7 @@ export class UserController {
       res.send(`<body style="margin: 0;font-family: &quot;system-ui&quot;, sans-serif;"><main style="display: flex;height: 100vh;justify-content: center;align-items: center;flex-direction: column;"><h1>Congratulations 🎉</h1>
       <p>Your account ${dbr.email} is successfully verify.</p></main></body>`);
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error." });

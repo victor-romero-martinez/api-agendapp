@@ -3,7 +3,7 @@
  * @param {'success 🎉'|'info ✨'|'error ☠'|'warn ☣'} type - Type of log
  * @param {any} [mjs] - Log message
  */
-export function logHelper(type = "error ☠", mjs) {
+export function logHelper(mjs, type = "error ☠") {
   if (type === "error ☠") {
     console.trace(type);
     console.log("-".repeat(20));

@@ -38,7 +38,7 @@ export class DashboardController {
         res.json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error." });
@@ -72,7 +72,7 @@ export class DashboardController {
         res.status(cat["201_CREATED"]).json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Error creating dashboard." });
@@ -108,7 +108,7 @@ export class DashboardController {
         res.json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Error updating dashboard." });
@@ -147,7 +147,7 @@ export class DashboardController {
         res.json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error." });
