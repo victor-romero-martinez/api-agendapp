@@ -10,9 +10,9 @@ import fs from "fs";
   db.serialize(() => {
     db.exec(query, (err) => {
       if (err) {
-        logHelper("error ☠", err);
+        logHelper(err);
       } else {
-        logHelper("success 🎉", "Query executed successfully");
+        logHelper("Query executed successfully", "success 🎉");
       }
     });
   });

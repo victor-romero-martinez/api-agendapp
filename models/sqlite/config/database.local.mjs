@@ -10,8 +10,8 @@ if (!DB_URL) {
 
 export const db = new sqlite3.Database(DB_URL, (err) => {
   if (err) {
-    return logHelper("error ☠", err);
+    return logHelper(err);
   }
 
-  logHelper("success 🎉", "Connected to db");
+  logHelper("Connected to db", "success 🎉");
 });

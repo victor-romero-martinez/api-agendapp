@@ -67,7 +67,7 @@ export class AuthController {
           .json(dbr);
       }
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error." });
@@ -111,7 +111,7 @@ export class AuthController {
         })
         .json(responseData);
     } catch (error) {
-      logHelper("error ☠", error);
+      logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
         .json({ error: "Internal Server Error" });

@@ -40,6 +40,6 @@ export const createApp = ({
   app.use(`/api/${VERSION}/docs`, swaggerUI.serve, swaggerUI.setup(specs));
 
   app.listen(PORT, () => {
-    logHelper("info ✨", `App Listening on ${HOST}:${PORT}/api/${VERSION}`);
+    logHelper(`App Listening on ${HOST}:${PORT}/api/${VERSION}`, "info ✨");
   });
 };
