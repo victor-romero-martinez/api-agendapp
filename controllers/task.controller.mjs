@@ -1,6 +1,6 @@
 //@ts-check
+import { idSchema } from "../schemas/id.schema.mjs";
 import { taskEditable, taskSchema } from "../schemas/task.schema.mjs";
-import { dateFormatter } from "../utils/dateFormatter.mjs";
 import { cat } from "../utils/httpcat.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
 
@@ -24,22 +24,20 @@ export class TaskController {
         const dbr = await this.taskModel.findAll();
         res.json(dbr);
       } catch (error) {
-        logHelper("error ☠", error);
+        logHelper(error);
         res
           .status(cat["500_INTERNAL_SERVER_ERROR"])
           .json({ error: "Internal Server Error" });
       }
     } else {
       // convert to number
-      const id = +req.query.author_id;
+      const id = idSchema.safeParse(+req.query.author_id);
       // verify is NaN
-      if (isNaN(id)) {
-        return res
-          .status(cat["400_BAD_REQUEST"])
-          .json({ error: "id Must be a number" });
+      if (!id.success) {
+        return res.status(cat["400_BAD_REQUEST"]).json(id.error.issues);
       }
       try {
-        const dbr = await this.taskModel.findByAuthorId(id);
+        const dbr = await this.taskModel.findByAuthorId(id.data.id);
         res.json(dbr);
       } catch (error) {
         logHelper(error);
@@ -55,16 +53,14 @@ export class TaskController {
    * @param {import('express').Response} res
    * */
   getById = async (req, res) => {
-    const id = +req.params.id;
+    const id = idSchema.safeParse(+req.params.id);
 
-    if (isNaN(id)) {
-      return res
-        .status(cat["400_BAD_REQUEST"])
-        .json({ error: "Should be a number" });
+    if (!id.success) {
+      return res.status(cat["400_BAD_REQUEST"]).json(id.error.issues);
     }
 
     try {
-      const dbr = await this.taskModel.getById(id);
+      const dbr = await this.taskModel.getById(id.data.id);
 
       if (!dbr) {
         return res
@@ -176,8 +172,13 @@ export class TaskController {
         .status(cat["404_NOT_FOUND"])
         .json({ error: "Missing email token." });
     }
+    const newId = idSchema.safeParse({ id: +id });
+    if (!newId.success) {
+      return res.status(cat["400_BAD_REQUEST"]).json(newId.error.issues);
+    }
+
     try {
-      const dbr = await this.taskModel.delete(+id, email);
+      const dbr = await this.taskModel.delete(newId.data.id, email);
 
       if (dbr.message === "User does not exist.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);

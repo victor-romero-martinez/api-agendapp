@@ -3,6 +3,7 @@ import {
   DashboardSchema,
   DashboardUpdateSchema,
 } from "../schemas/dashboard.schema.mjs";
+import { idSchema } from "../schemas/id.schema.mjs";
 import { cat } from "../utils/httpcat.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
 
@@ -135,10 +136,17 @@ export class DashboardController {
         .status(cat["400_BAD_REQUEST"])
         .json({ error: "Missing id query." });
     }
+    const newId = idSchema.safeParse({ id: +idQuery });
+    if (!newId.success) {
+      return res.status(cat["400_BAD_REQUEST"]).json(newId.error.issues);
+    }
 
     try {
       const id = +idQuery;
-      const dbr = await this.dashboardModel.delete({ email, id });
+      const dbr = await this.dashboardModel.delete({
+        email,
+        id: newId.data.id,
+      });
       if (dbr.message === "User does not exists.") {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else if (dbr.message === "Dashboard does not exists.") {
