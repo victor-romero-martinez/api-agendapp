@@ -79,7 +79,7 @@ Content-Type: application/json
 }
 
 ### delete a task
-DELETE http://localhost:3000/api/v1/task?id=3
+DELETE http://localhost:3000/api/v1/task?id=5
 
 ### DASHBOARD
 # Get dashboard by email only session
@@ -90,7 +90,7 @@ PUT http://localhost:3000/api/v1/dashboard
 Content-Type: application/json
 
 {
-  "name": "my dash"
+  "name": "tertiary dash"
 }
 
 ### Update a dashboard
@@ -103,7 +103,7 @@ Content-Type: application/json
 }
 
 ### delete a dashboard
-DELETE  http://localhost:3000/api/v1/dashboard?id=4
+DELETE  http://localhost:3000/api/v1/dashboard?id=1
 
 ### TEAM
 # get team by email session
@@ -114,8 +114,19 @@ POST http://localhost:3000/api/v1/team
 Content-Type: application/json
 
 {
-  "members": [1, 2, 3, 5]
+  "add": [1, 2]
+}
+
+### Update team. need session!
+PATCH   http://localhost:3000/api/v1/team
+Content-Type: application/json
+
+# "add": [1, 2]
+# "remove": 1
+{
+  "id": 11,
+"add": [1]
 }
 
 ### Delete a team. need session!
-DELETE  http://localhost:3000/api/v1/team?id=2
+DELETE  http://localhost:3000/api/v1/team?id=7
