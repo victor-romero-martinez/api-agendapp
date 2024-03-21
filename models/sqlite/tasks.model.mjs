@@ -173,7 +173,7 @@ export class Task {
   async delete(taskId, email) {
     try {
       const isExist = await this.#checkTask(taskId);
-      if (!isExist.id) return { message: "Task does not exists." };
+      if (!isExist) return { message: "Task does not exists." };
 
       const authorId = await this.#getAuthorID(email);
       if (!authorId) return { message: "User does not exists." };
