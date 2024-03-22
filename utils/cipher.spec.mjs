@@ -1,5 +1,7 @@
 import "dotenv/config";
+import { expect, test } from "vitest";
 import { Cipher } from "./cipher.mjs";
+
 const SECRET = process.env.SECRET;
 
 if (!SECRET) {
@@ -8,15 +10,12 @@ if (!SECRET) {
 
 const c = new Cipher(SECRET);
 
-/** @param {string} params */
-export function passwordTest(params) {
-  return c.generate(params);
-}
+test("Should be generate a hash string", () => {
+  expect(c.generate("my-password")).toBe("32c9bab5a57b4a4a690f253c2c07185b");
+});
 
-/**
- * @param {string} a - original
- * @param {string} b - cipher
- */
-export function comparePassword(a, b) {
-  return c.compare(a, b);
-}
+test("Should be return true is equal arguments", () => {
+  expect(c.compare("my-password", "32c9bab5a57b4a4a690f253c2c07185b")).toBe(
+    Boolean(true)
+  );
+});

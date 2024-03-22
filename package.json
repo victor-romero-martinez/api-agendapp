@@ -4,7 +4,7 @@
   "description": "Aplicación de agendas",
   "main": "index.js",
   "scripts": {
-    "test": "vitest --watch test/functional.test.mjs ",
+    "test": "vitest --watch",
     "generate:local": "node models/sqlite/config/generate-table.script.mjs",
     "dev:sqlite3": "node --watch server-with-sqlite3.mjs"
   },
