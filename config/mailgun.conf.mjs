@@ -31,7 +31,7 @@ export function sendMail(email, token) {
       text: "Testing some Mailgun awesomeness!. ",
       html: `<main style="height: 100vh;display: flex;font-family: &quot;system-ui&quot;, sans-serif;flex-direction: column;align-items: center;justify-content: center;">
       <h1>Testing some Mailgun awesomeness!</h1>
-  <p>Para confirmar su correo ${email} haga <a href='${URL}:${PORT}/api/${VERSION}/verify?token=${token} rel='noopener noreferrer'>click aquí</a></p>
+  <p>Para confirmar su correo ${email} haga <a href='${URL}:${PORT}/api/${VERSION}/verify?token=${token}' rel='noopener noreferrer'>click aquí</a></p>
   </main>`,
     })
     .then((msg) => console.log(msg)) // logs response data
