@@ -1,10 +1,14 @@
 import z from "zod";
 
-export const teamSchema = z.object({
-  add: z.array(z.number().positive()).nonempty().optional(),
-  remove: z.number().positive().optional(),
+const base = z.object({
+  members: z.array(z.number().positive()).nonempty(),
 });
 
-export const teamEditable = teamSchema.extend({
+export const teamSchema = base.extend({
+  organization: z.string().min(3).max(60),
+});
+
+export const teamEditable = base.extend({
   id: z.number().positive(),
+  action: z.enum(["add", "remove"]),
 });

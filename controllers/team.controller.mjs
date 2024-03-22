@@ -28,10 +28,6 @@ export class TeamController {
 
     try {
       const dbr = await this.teamModel.get(email);
-
-      // @ts-ignore
-      dbr.map((d) => (d.members = JSON.parse(d.members)));
-
       res.json(dbr);
     } catch (error) {
       logHelper(error, "error ☠");
@@ -61,11 +57,13 @@ export class TeamController {
     }
 
     try {
-      const dbr = await this.teamModel.create(reqData.data.add, email);
-      if (dbr.members) {
-        dbr.members = JSON.parse(dbr.members);
+      const dbr = await this.teamModel.create(reqData.data, email);
+
+      if (dbr.message === "Some users were not found or do not exist.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
+      } else {
+        res.status(cat["201_CREATED"]).json(dbr);
       }
-      res.status(cat["201_CREATED"]).json(dbr);
     } catch (error) {
       logHelper(error, "error ☠");
       res
@@ -105,9 +103,6 @@ export class TeamController {
       ) {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else {
-        if (dbr.members) {
-          dbr.members = JSON.parse(dbr.members);
-        }
         res.json(dbr);
       }
     } catch (error) {

@@ -14,14 +14,15 @@ PATCH  http://localhost:3000/api/v1/user
 Content-Type: application/json
 
 {
-  "user_name": "fidum1"
+  "user_name": "test",
+  "url_img": "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/dd/dd9d2849436c52a0a65c306e37722a9859147c18.jpg"
 }
 
 ### Disable profile
-DELETE http://localhost:3000/api/v1/user?id=3
+DELETE http://localhost:3000/api/v1/user?id=1
 
 ### verify account
-GET  http://localhost:3000/api/v1/verify?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImloY29Ad2VqZS5wayIsImlhdCI6MTcxMDYwMjc4MywiZXhwIjoxNzExMjA3NTgzfQ.gpPkrv6HJUC2dTA6TWG3Ujd8PFXNe3jk_ijKP-jXSAc
+GET http://localhost:3000/api/v1/verify?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3MTExMTA2MTcsImV4cCI6MTcxMTcxNTQxN30.p1GJRQOceTkw1jxyoOJxv653f6dv5ho_A8lZmXolq9Y
 -----------------------------------------------------------------
 # AUTH
 ### register a user
@@ -29,8 +30,8 @@ POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "emid@efakewa.gg",
-  "password": "emid"
+  "email": "test@mail.com",
+  "password": "test"
 }
 
 ### get session
@@ -38,8 +39,8 @@ POST  http://localhost:3000/api/v1/signing
 Content-Type: application/json
 
 {
-  "email": "dabtut@jiufahu.mr",
-  "password": "dabtut"
+  "email": "test@mail.com",
+  "password": "test"
 }
 
 ### signout session
@@ -114,18 +115,19 @@ POST http://localhost:3000/api/v1/team
 Content-Type: application/json
 
 {
-  "add": [1, 2]
+  "organization": "super",
+  "members": [2]
 }
 
 ### Update team. need session!
 PATCH   http://localhost:3000/api/v1/team
 Content-Type: application/json
+  # "action": "remove",
 
-# "add": [1, 2]
-# "remove": 1
 {
-  "id": 11,
-"add": [1]
+  "action": "add",
+  "id": 2,
+  "members": [1]
 }
 
 ### Delete a team. need session!

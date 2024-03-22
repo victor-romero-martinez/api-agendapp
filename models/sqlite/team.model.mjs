@@ -1,9 +1,22 @@
 // @ts-check
+import { placeholderQuery } from "../../utils/slq-placeholder.mjs";
 import { db } from "./config/database.local.mjs";
 import { USER_TABLE } from "./user.model.mjs";
 
 /** Name od table */
 export const TEAM_TABLE = "team";
+
+/** Parse JSON */
+function convertStringToArray(data) {
+  const dataConverted = [];
+
+  for (const d of data) {
+    const toArray = JSON.parse(d.members);
+    dataConverted.push({ ...d, members: toArray });
+  }
+
+  return dataConverted;
+}
 
 /** Team model SQLite */
 export class Team {
@@ -18,45 +31,65 @@ export class Team {
         if (err) {
           rej(err);
         } else {
-          res(rows);
+          const convertToArray = convertStringToArray(rows);
+          res(convertToArray);
         }
       });
     });
   }
 
+  // * @param {number[]|undefined} data
   /** Create team
-   * @param {number[]|undefined} data
+   * @param {{
+   * organization: string,
+   * members: number[]
+   * }} data
    * @param {string} email
    * @returns {Promise<TTeam>}
    */
-  create(data, email) {
-    return new Promise((res, rej) => {
-      const members = JSON.stringify(data);
-      const param = data ? [members, email] : [email];
+  async create(data, email) {
+    try {
+      const isExistUsers = await this.#checkUsersExist(data.members);
+      if (isExistUsers.result == false) {
+        return { message: "Some users were not found or do not exist." };
+      }
 
-      const sql = `INSERT INTO ${TEAM_TABLE} (${
-        data ? "members, " : ""
-      }author_id) VALUES (${
-        data ? "?, " : ""
-      }(SELECT id FROM ${USER_TABLE} WHERE email = ?));`;
+      return new Promise((res, rej) => {
+        // require string to save
+        const toString = JSON.stringify(data.members);
+        const placeholder = placeholderQuery({
+          ...data,
+          members: toString,
+        });
 
-      db.run(sql, param, function (err) {
-        if (err) {
-          rej(err);
-        } else {
-          const id = this.lastID;
+        const sql = `INSERT INTO ${TEAM_TABLE} (${
+          placeholder[0]
+        },author_id) VALUES (${placeholder[1].map(
+          () => "?"
+        )},(SELECT id FROM ${USER_TABLE} WHERE email = ?));`;
 
-          const sql2 = `SELECT * FROM ${TEAM_TABLE} WHERE id = ?;`;
-          db.get(sql2, [id], (err, row) => {
-            if (err) {
-              rej(err);
-            } else {
-              res(row);
-            }
-          });
-        }
+        db.run(sql, [...placeholder[1], email], function (err) {
+          if (err) {
+            rej(err);
+          } else {
+            const id = this.lastID;
+
+            const sql2 = `SELECT * FROM ${TEAM_TABLE} WHERE id = ?;`;
+            db.get(sql2, [id], (err, row) => {
+              if (err) {
+                rej(err);
+              } else {
+                const convertToArray = JSON.parse(row.members);
+                const newRow = { ...row, members: convertToArray };
+                res(newRow);
+              }
+            });
+          }
+        });
       });
-    });
+    } catch (error) {
+      throw Error(error);
+    }
   }
 
   /** Delete team
@@ -92,55 +125,44 @@ export class Team {
 
   /** update team member
    * @param {{
-   *  id: number,
-   * add?: number[],
-   * remove?: number
+   * id: number,
+   * members: number[],
+   * action: 'add' | 'remove'
    * }} data
    * @param {string} email
    * @returns {Promise<TTeam>}
    */
   async update(data, email) {
     try {
-      const checkTeam = await this.#getTeam(data.id);
-      if (!checkTeam) return { message: "Team does not exists." };
+      const team = await this.#getTeam(data.id);
+      if (!team.members) {
+        throw Error("Member is empty.");
+      }
 
-      const authorization = await this.#getAuthorization(data.id, email);
-      if (authorization.authorized == false) {
+      // check authorization
+      const isAuthorized = await this.#getAuthorization(data.id, email);
+      if (isAuthorized.authorized == false) {
         return { message: "Unauthorized." };
       }
 
-      const { add, remove = 0, id } = data;
-      const newData = {
-        id,
-        members: add ? add : remove,
-      };
-
-      if (!checkTeam.members) throw Error("Should be have [].");
-      /** @type {number[]} */
-      const membersParse = JSON.parse(checkTeam.members);
-
-      if (newData.members === add) {
-        const isUsersExists = await this.#checkUsersExist(newData.members);
-        if (isUsersExists.result == false) {
+      if (data.action === "add") {
+        // search if exist user
+        const isExistUsers = await this.#checkUsersExist(data.members);
+        if (isExistUsers.result == false) {
           return { message: "Some users were not found or do not exist." };
         }
 
-        const deletedDuplicate = new Set([...membersParse, ...newData.members]);
-        const convertedToArray = Array.from(deletedDuplicate);
-        // should be string to save
-        const convertedToString = JSON.stringify(convertedToArray);
+        const parseNewMembers = new Set([...team.members, ...data.members]);
+        const covertToString = JSON.stringify(Array.from(parseNewMembers));
 
-        return await this.#updater(convertedToString, id);
+        return await this.#updater(covertToString, data.id);
       } else {
-        if (typeof membersParse === "string")
-          throw Error("Expected an Array but receive a string.");
-
-        const filteredMembers = membersParse.filter(
-          (m) => m != newData.members
+        const filteredMembers = team.members.filter(
+          (m) => !data.members.includes(m)
         );
         const convertedToString = JSON.stringify(filteredMembers);
 
-        return await this.#updater(convertedToString, id);
+        return await this.#updater(convertedToString, data.id);
       }
     } catch (error) {
       throw Error(error);
@@ -158,7 +180,12 @@ export class Team {
         if (err) {
           rej(err);
         } else {
-          res(row);
+          const toArray = JSON.parse(row.members);
+          const newRow = {
+            ...row,
+            members: toArray,
+          };
+          res(newRow);
         }
       });
     });
@@ -210,7 +237,7 @@ export class Team {
    */
   #updater(data, id) {
     return new Promise((res, rej) => {
-      const sql = `UPDATE team SET members = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;`;
+      const sql = `UPDATE ${TEAM_TABLE} SET members = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?;`;
       db.run(sql, [data, id], (err) => {
         if (err) {
           rej(err);
@@ -228,7 +255,8 @@ export class Team {
  * @typedef {{
  * id?: number,
  * author_id?: number,
- * members?: string,
+ * organization?: string
+ * members?: number[],
  * updated_at?: string,
  * created_at?: string,
  * message?: string
