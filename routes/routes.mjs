@@ -22,6 +22,14 @@
  *      allOf:
  *         - $ref: '#/components/TaskEditable'
  *         - $ref: '#/components/TaskNoEditable'
+ *    Team:
+ *      allOf:
+ *         - $ref: '#/components/TeamEditable'
+ *         - $ref: '#/components/TeamNoEditable'
+ *    Dashboard:
+ *      allOf:
+ *        - $ref: '#/components/DashboardEditable'
+ *        - $ref: '#/components/DashboardNoEditable'
  *  UserEditable:
  *    type: object
  *    properties:
@@ -38,7 +46,7 @@
  *    type: object
  *    properties:
  *      id:
- *        type: number
+ *        type: integer
  *        format: int64
  *      role:
  *        type: string
@@ -63,11 +71,10 @@
  *        type: string
  *      description:
  *        type: string
- *      status:
+ *      color:
  *        type: string
- *        default: pending
  *      priority:
- *        type: number
+ *        type: integer
  *        default: 1
  *      due_date:
  *        type: string
@@ -76,9 +83,50 @@
  *    type: object
  *    properties:
  *      id:
- *        type: number
+ *        type: integer
  *      author_id:
- *        type: number
+ *        type: integer
+ *      created_at:
+ *        type: string
+ *        format: date
+ *      updated_at:
+ *        type: string
+ *        format: date
+ *  TeamEditable:
+ *    type: object
+ *    properties:
+ *      author_id:
+ *        type: integer
+ *      organization:
+ *        type: string
+ *      members:
+ *        type: array
+ *        items:
+ *          type: integer
+ *        example: [1, 2, 3]
+ *  TeamNoEditable:
+ *    type: object
+ *    properties:
+ *      id:
+ *        type: integer
+ *      created_at:
+ *        type: string
+ *        format: date
+ *      updated_at:
+ *        type: string
+ *        format: date
+ *  DashboardEditable:
+ *    type: object
+ *    properties:
+ *      name:
+ *        type: string
+ *  DashboardNoEditable:
+ *    type: object
+ *    properties:
+ *      id:
+ *        type: integer
+ *      owner_id:
+ *        type: integer
  *      created_at:
  *        type: string
  *        format: date
@@ -473,9 +521,135 @@ export const appRouter = ({
   router.delete("/task", jwtMiddleware, taskController.delete);
 
   //  Dashboard
+  /**
+   * @swagger
+   * /dashboard:
+   *  get:
+   *    summary: Get dashboard by email
+   *    description: Only if session exist.
+   *    tags: [Dashboard]
+   *    security:
+   *      - cookieAuth: []
+   *    produces:
+   *      - application.json
+   *    responses:
+   *      200:
+   *        description: Response with an array
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: array
+   *              items:
+   *                $ref: '#/components/schemas/Dashboard'
+   *      401:
+   *        description: Unauthorized
+   *      404:
+   *        description: User does not exists.
+   *      500:
+   *        description: Internal Server Error.
+   */
   router.get("/dashboard", jwtMiddleware, dashboardController.groupByEmail);
+  /**
+   * @swagger
+   * /dashboard:
+   *  put:
+   *    summary: Create a new dashboard
+   *    tags: [Dashboard]
+   *    security:
+   *      - cookieAuth: []
+   *    produces:
+   *      - application/json
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/DashboardEditable'
+   *    responses:
+   *      201:
+   *        description: Response with the new dashboard
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/Dashboard'
+   *      400:
+   *        description: Bad Request
+   *      401:
+   *        description: Unauthorized
+   *      404:
+   *        description: Not Found
+   *      500:
+   *        description: Internal Server Error
+   */
   router.put("/dashboard", jwtMiddleware, dashboardController.create);
+  /**
+   * @swagger
+   * /dashboard:
+   *  patch:
+   *    summary: Update a dashboard
+   *    tags: [Dashboard]
+   *    security:
+   *      - cookieAuth: []
+   *    produces:
+   *      - application/json
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/DashboardEditable'
+   *    responses:
+   *      201:
+   *        description: Response with the updated dashboard
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/Dashboard'
+   *      400:
+   *        description: Bad Request
+   *      401:
+   *        description: Unauthorized
+   *      404:
+   *        description: Not Found
+   *      500:
+   *        description: Internal Server Error
+   */
   router.patch("/dashboard", jwtMiddleware, dashboardController.update);
+  /**
+   * @swagger
+   * /dashboard:
+   *  delete:
+   *    summary: Delete a dashboard
+   *    tags: [Dashboard]
+   *    security:
+   *      - cookieAuth: []
+   *    produces:
+   *      - application/json
+   *    parameters:
+   *      - in: query
+   *        required: true
+   *        name: id
+   *        schema:
+   *          type: integer
+   *    responses:
+   *      201:
+   *        description: Response with the new dashboard
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                message:
+   *                  type: string
+   *      400:
+   *        description: Bad Request
+   *      401:
+   *        description: Unauthorized
+   *      404:
+   *        description: Not Found
+   *      500:
+   *        description: Internal Server Error
+   */
   router.delete("/dashboard", jwtMiddleware, dashboardController.delete);
 
   // Team
