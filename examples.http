@@ -64,7 +64,8 @@ Content-Type: application/json
   "title": "create 3",
   "dashboard_id": 1,
   "priority": 3,
-  "due_date": "2024-03-20 23:11:33"
+  "due_date": "2024-03-20 23:11:33",
+  "assigned_to": 2
 }
 
 ### update a new task
@@ -73,10 +74,8 @@ Content-Type: application/json
 
 {
   "dashboard_id": 1,
-  "id": 4,
-  "title": "updating taski",
-  "description": "Hay que cerrar el estadio!! 🎉",
-  "due_date": "2024-03-16 23:11:33"
+  "id": 2,
+  "assigned_to": 2
 }
 
 ### delete a task

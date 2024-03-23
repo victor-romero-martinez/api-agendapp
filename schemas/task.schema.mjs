@@ -9,6 +9,7 @@ const task = z.object({
   description: z.string().min(4).max(250).optional(),
   priority: z.number().min(1).max(5).optional(),
   due_date: z.string().optional(),
+  assigned_to: z.number().positive().optional(),
 });
 
 export const taskSchema = task.merge(dashboard);

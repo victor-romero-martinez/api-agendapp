@@ -82,6 +82,12 @@ export class Task {
         return { message: "Forbidden." };
       }
 
+      // check is exist user to assign
+      const isValidUser = await this.#findUserExist(data);
+      if (isValidUser.result == false) {
+        return { message: "User not valid." };
+      }
+
       const newData = { ...data, color: randomColor() };
       const placeholder = placeholderQuery(newData);
 
@@ -136,6 +142,12 @@ export class Task {
         isExist.dashboard_id !== dashboard.id
       ) {
         return { message: "Forbidden." };
+      }
+
+      // check is exist user to assign
+      const isValidUser = await this.#findUserExist(data);
+      if (isValidUser.result == false) {
+        return { message: "User not valid." };
       }
 
       // split id and data
@@ -244,6 +256,23 @@ export class Task {
       });
     });
   }
+
+  /** Find User exist by id
+   * @param {TTask} data
+   * @returns {Promise<{ result: boolean }>}
+   */
+  #findUserExist(data) {
+    return new Promise((res, rej) => {
+      const sql = `SELECT EXISTS (SELECT * FROM user WHERE id = ?) AS result;`;
+      db.get(sql, [data.assigned_to], (err, row) => {
+        if (err) {
+          rej(err);
+        } else {
+          res(row);
+        }
+      });
+    });
+  }
 }
 
 /** Type input
@@ -254,7 +283,8 @@ export class Task {
  *  priority?: number,
  *  color?: string,
  *  due_date?: string,
- *  dashboard_id?: number
+ *  dashboard_id?: number,
+ * assigned_to?: number
  * }} TTask
  */
 
