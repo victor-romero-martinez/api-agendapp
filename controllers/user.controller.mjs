@@ -187,17 +187,17 @@ export class UserController {
           );
       }
 
-      const dbr = await this.userModel.updateUser(
-        { verified: true, token_email: null },
-        decode.email
-      );
+      const dbr = await this.userModel.validator(decode);
+
       res.send(`<body style="margin: 0;font-family: &quot;system-ui&quot;, sans-serif;"><main style="display: flex;height: 100vh;justify-content: center;align-items: center;flex-direction: column;"><h1>Congratulations 🎉</h1>
-      <p>Your account ${dbr.email} is successfully verify.</p></main></body>`);
+      <p>Your account ${dbr.verified} is successfully verify.</p></main></body>`);
     } catch (error) {
       logHelper(error);
       res
         .status(cat["500_INTERNAL_SERVER_ERROR"])
-        .json({ error: "Internal Server Error." });
+        .send(
+          `<body style="margin: 0;font-family: &quot;system-ui&quot;, sans-serif;"><main style="display: flex;height: 100vh;justify-content: center;align-items: center;"><h1>500 Internal Server Error :(</h1></main></body>`
+        );
     }
   };
 }

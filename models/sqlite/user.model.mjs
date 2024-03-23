@@ -178,7 +178,6 @@ export class User {
    * @param {TUser} data
    */
   getSession(data) {
-    console.log("data: ", data);
     return new Promise((res, rej) => {
       const sql = `SELECT * FROM ${USER_TABLE} WHERE email = ?  AND active = 1`;
       db.get(sql, [data.email], (err, row) => {
@@ -198,6 +197,23 @@ export class User {
           }
 
           res(row);
+        }
+      });
+    });
+  }
+
+  /** Validator user email `only for verification by email`
+   *@param {TUser}  data
+   @returns {Promise<Record<string, any>>}
+   */
+  validator(data) {
+    return new Promise((res, rej) => {
+      const sql = `UPDATE ${USER_TABLE} SET verified = 1, token_email = null, updated_at = CURRENT_TIMESTAMP WHERE email = ?ND token_email IS NOT NULL;`;
+      db.run(sql, [data.email], (err) => {
+        if (err) {
+          rej(err);
+        } else {
+          res({ verified: data.email });
         }
       });
     });
