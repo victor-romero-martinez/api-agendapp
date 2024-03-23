@@ -27,7 +27,7 @@ export function sendMail(email, token) {
     .create(DOMAIN, {
       from: FROM,
       to: [DESTINATION_DEV],
-      subject: "Hello",
+      subject: "Hello Dev!",
       text: "Testing some Mailgun awesomeness!. ",
       html: `<main style="height: 100vh;display: flex;font-family: &quot;system-ui&quot;, sans-serif;flex-direction: column;align-items: center;justify-content: center;">
       <h1>Testing some Mailgun awesomeness!</h1>

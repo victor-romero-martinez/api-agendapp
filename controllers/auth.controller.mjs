@@ -47,8 +47,8 @@ export class AuthController {
 
     const newUser = { ...parse.data, token_email };
 
+    sendMail(parse.data.email, token_email);
     try {
-      // sendMail(parse.data.email, token_email);
       const session = await this.userModel.createUser(newUser);
 
       if (session?.message === "User is already exists.") {
