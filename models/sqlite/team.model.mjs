@@ -218,7 +218,7 @@ export class Team {
       const quantityExpected = ids.length;
       const sql = `SELECT CASE WHEN COUNT(*) = ${quantityExpected} THEN 1 ELSE 0 END AS result FROM ${USER_TABLE} WHERE id IN (${ids.map(
         (i) => "?"
-      )});`;
+      )}) AND active = 1;`;
 
       db.get(sql, [...ids], (err, row) => {
         if (err) {

@@ -263,7 +263,7 @@ export class Task {
    */
   #findUserExist(data) {
     return new Promise((res, rej) => {
-      const sql = `SELECT EXISTS (SELECT * FROM user WHERE id = ?) AS result;`;
+      const sql = `SELECT EXISTS (SELECT * FROM user WHERE id = ?  AND active = 1) AS result;`;
       db.get(sql, [data.assigned_to], (err, row) => {
         if (err) {
           rej(err);
