@@ -103,6 +103,8 @@ export class TaskController {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else if (dbr.message === "Forbidden.") {
         res.status(cat["403_FORBIDDEN"]).json(dbr);
+      } else if (dbr.message === "User not valid.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else {
         res.status(cat["201_CREATED"]).json(dbr);
       }
@@ -141,6 +143,8 @@ export class TaskController {
         res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else if (dbr.message === "Forbidden.") {
         res.status(cat["403_FORBIDDEN"]).json(dbr);
+      } else if (dbr.message === "User not valid.") {
+        res.status(cat["404_NOT_FOUND"]).json(dbr);
       } else {
         res.json(dbr);
       }
