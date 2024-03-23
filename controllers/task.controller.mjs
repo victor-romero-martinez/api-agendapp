@@ -31,7 +31,7 @@ export class TaskController {
       }
     } else {
       // convert to number
-      const id = idSchema.safeParse(+req.query.author_id);
+      const id = idSchema.safeParse({ id: +req.query.author_id });
       // verify is NaN
       if (!id.success) {
         return res.status(cat["400_BAD_REQUEST"]).json(id.error.issues);
@@ -53,8 +53,7 @@ export class TaskController {
    * @param {import('express').Response} res
    * */
   getById = async (req, res) => {
-    const id = idSchema.safeParse(+req.params.id);
-
+    const id = idSchema.safeParse({ id: +req.params.id });
     if (!id.success) {
       return res.status(cat["400_BAD_REQUEST"]).json(id.error.issues);
     }
