@@ -23,15 +23,16 @@ DELETE http://localhost:3000/api/v1/user?id=1
 
 ### verify account
 GET http://localhost:3000/api/v1/verify?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAbWFpbC5jb20iLCJpYXQiOjE3MTExMTA2MTcsImV4cCI6MTcxMTcxNTQxN30.p1GJRQOceTkw1jxyoOJxv653f6dv5ho_A8lZmXolq9Y
------------------------------------------------------------------
-# AUTH
+
+#-------------------- AUTH ------------------------- 
+
 ### register a user
 POST  http://localhost:3000/api/v1/register
 Content-Type: application/json
 
 {
-  "email": "test@mail.com",
-  "password": "test"
+  "email": "satfuza@ogetib.ax",
+  "password": "satfuza"
 }
 
 ### get session
@@ -45,13 +46,14 @@ Content-Type: application/json
 
 ### signout session
 GET http://localhost:3000/api/v1/signout
------------------------------------------------------------------
-### TASKS
+
+### -------------------- TASKS ----------------------------
+
 # get all tasks
 GET http://localhost:3000/api/v1/task
 
 ### get all tasks by query using author_id
-GET http://localhost:3000/api/v1/task?author_id=1
+GET http://localhost:3000/api/v1/task?author_id=2
 
 ### get tasks by id
 GET http://localhost:3000/api/v1/task/2
@@ -105,7 +107,7 @@ Content-Type: application/json
 ### delete a dashboard
 DELETE  http://localhost:3000/api/v1/dashboard?id=1
 
-### TEAM
+### -------------------- TEAM -----------------------------
 # get team by email session
 GET http://localhost:3000/api/v1/team
 
@@ -115,7 +117,7 @@ Content-Type: application/json
 
 {
   "organization": "super",
-  "members": [2]
+  "members": [1, 2]
 }
 
 ### Update team. need session!
@@ -124,10 +126,10 @@ Content-Type: application/json
   # "action": "remove",
 
 {
-  "action": "add",
   "id": 2,
-  "members": [1]
+  "action": "add",
+  "members": [1],
 }
 
 ### Delete a team. need session!
-DELETE  http://localhost:3000/api/v1/team?id=7
+DELETE  http://localhost:3000/api/v1/team?id=2
