@@ -53,11 +53,11 @@ export class User {
   findUserByEmail(data) {
     return new Promise((res, rej) => {
       const sql = `SELECT ${sqlPlaceholder()} FROM ${USER_TABLE} WHERE email = ?`;
-      db.get(sql, [data.email], (err, rows) => {
+      db.get(sql, [data.email], (err, row) => {
         if (err) {
           rej(err);
         } else {
-          res(rows);
+          res(row);
         }
       });
     });
@@ -72,8 +72,14 @@ export class User {
       const isAlreadyExist = await this.findUserByEmail(data);
 
       if (isAlreadyExist) {
-        if (isAlreadyExist.email && isAlreadyExist.active == false) {
-          return await this.updateUser({ active: true }, isAlreadyExist.email);
+        if (isAlreadyExist.active == false) {
+          const result = await this.#updater(
+            { active: true },
+            // @ts-ignore
+            isAlreadyExist.id
+          );
+
+          return result;
         } else if (isAlreadyExist.active == true) {
           return { message: "User is already exists." };
         }
@@ -112,11 +118,7 @@ export class User {
    */
   async updateUser(data, email) {
     try {
-      const user = await this.getSession(email);
-
-      if (!user.password || !user.id) {
-        return { message: "Failed to update user." };
-      }
+      const user = await this.getSession({ email });
 
       if (data.password && data.new_password) {
         const isAuthorized = cipher.compare(data.password, user.password);
@@ -173,15 +175,28 @@ export class User {
   }
 
   /** Get all fields by email
-   * @param {string} email
+   * @param {TUser} data
    */
-  getSession(email) {
+  getSession(data) {
+    console.log("data: ", data);
     return new Promise((res, rej) => {
-      const sql = `SELECT * FROM ${USER_TABLE} WHERE email = ?`;
-      db.get(sql, [email], (err, row) => {
+      const sql = `SELECT * FROM ${USER_TABLE} WHERE email = ?  AND active = 1`;
+      db.get(sql, [data.email], (err, row) => {
         if (err) {
           rej(err);
+        } else if (!row) {
+          res({ message: "User does not exist." });
         } else {
+          const isSamePassword = cipher.compare(
+            // @ts-ignore
+            data.password,
+            row.password
+          );
+
+          if (!isSamePassword) {
+            res({ message: "Incorrect password or email" });
+          }
+
           res(row);
         }
       });
@@ -201,17 +216,16 @@ export class User {
       db.run(sql, [...placeholder[1], id], function (err) {
         if (err) {
           rej(err);
-        } else {
-          const sql2 = `SELECT ${sqlPlaceholder()} FROM ${USER_TABLE} WHERE id = ?`;
-
-          db.get(sql2, [id], (err, row) => {
-            if (err) {
-              rej(err);
-            } else {
-              res(row);
-            }
-          });
         }
+
+        const sql2 = `SELECT * FROM ${USER_TABLE} WHERE id = ?;`;
+        db.get(sql2, [id], (err, row) => {
+          if (err) {
+            rej(err);
+          }
+
+          res(row);
+        });
       });
     });
   }

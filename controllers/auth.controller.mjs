@@ -48,24 +48,25 @@ export class AuthController {
     const newUser = { ...parse.data, token_email };
 
     try {
-      sendMail(parse.data.email, token_email);
-      const dbr = await this.userModel.createUser(newUser);
+      // sendMail(parse.data.email, token_email);
+      const session = await this.userModel.createUser(newUser);
 
-      if (dbr.message === "User is already exists.") {
-        res.status(cat["409_CONFLICT"]).json(dbr);
-      } else {
-        const token = jwtToken.sign(dbr, "2d");
-
-        res
-          .cookie("token", token, {
-            maxAge: 172800000,
-            httpOnly: true,
-            secure: false,
-            sameSite: "strict",
-          })
-          .status(cat["201_CREATED"])
-          .json(dbr);
+      if (session?.message === "User is already exists.") {
+        return res.status(cat["409_CONFLICT"]).json(session);
       }
+
+      const token = jwtToken.sign(session, "2d");
+      const { password, token_email, ...responseClient } = session;
+
+      res
+        .cookie("token", token, {
+          maxAge: 172800000,
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict",
+        })
+        .status(cat["201_CREATED"])
+        .json(responseClient);
     } catch (error) {
       logHelper(error);
       res
@@ -86,30 +87,25 @@ export class AuthController {
     }
 
     try {
-      const session = await this.userModel.getSession(parse.data.email);
+      const session = await this.userModel.getSession(parse.data);
 
-      const isSamePassword = cipher.compare(
-        parse.data.password,
-        session?.password
-      );
+      if (session.message === "User does not exist.") {
+        res.status(cat["404_NOT_FOUND"]).json(session);
+      } else if (session.message === "Incorrect password or email") {
+        res.status(cat["403_FORBIDDEN"]).json(session);
+      } else {
+        const token = jwtToken.sign(session, "2d");
+        const { password, token_email, ...responseClient } = session;
 
-      if (!session || !isSamePassword) {
-        return res
-          .status(cat["401_UNAUTHORIZED"])
-          .json({ message: "Incorrect password or email" });
+        res
+          .cookie("token", token, {
+            maxAge: 172800000,
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+          })
+          .json(responseClient);
       }
-
-      const { password, token_email, ...responseData } = session;
-      const token = jwtToken.sign(responseData, "2d");
-
-      res
-        .cookie("token", token, {
-          maxAge: 172800000,
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-        })
-        .json(responseData);
     } catch (error) {
       logHelper(error);
       res
