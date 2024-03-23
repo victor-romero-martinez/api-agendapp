@@ -179,8 +179,10 @@ export class Team {
       db.get(sql, [id], (err, row) => {
         if (err) {
           rej(err);
+        } else if (!row) {
+          res({ message: "Team does not exist." });
         } else {
-          const toArray = JSON.parse(row.members);
+          const toArray = JSON.parse(row?.members);
           const newRow = {
             ...row,
             members: toArray,
