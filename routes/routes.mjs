@@ -95,8 +95,6 @@
  *  TeamEditable:
  *    type: object
  *    properties:
- *      author_id:
- *        type: integer
  *      organization:
  *        type: string
  *      members:
@@ -108,6 +106,8 @@
  *    type: object
  *    properties:
  *      id:
+ *        type: integer
+ *      author_id:
  *        type: integer
  *      created_at:
  *        type: string
@@ -305,7 +305,7 @@ export const appRouter = ({
    *                type: string
    *    responses:
    *      201:
-   *        description: Response with new user
+   *        description: Response with new user.
    *        content:
    *          application/json:
    *            schema:
@@ -340,7 +340,7 @@ export const appRouter = ({
    *                type: string
    *    responses:
    *      200:
-   *        description: Get session auth
+   *        description: Get session auth.
    *        content:
    *          application/json:
    *            schema:
@@ -350,7 +350,7 @@ export const appRouter = ({
    *      401:
    *        description: Incorrect password or email.
    *      500:
-   *        description: Internal Server Error/
+   *        description: Internal Server Error.
    */
   router.post("/signing", authController.signing);
   /**
@@ -361,7 +361,7 @@ export const appRouter = ({
    *    tags: [Auth]
    *    responses:
    *      200:
-   *        description: Successfully
+   *        description: Successfully.
    */
   router.get("/signout", authController.signout);
 
@@ -382,7 +382,7 @@ export const appRouter = ({
    *          type: string
    *    responses:
    *      200:
-   *        description: Get one task
+   *        description: Get one task.
    *        content:
    *          application/json:
    *            schema:
@@ -405,7 +405,7 @@ export const appRouter = ({
    *      - application/json
    *    responses:
    *      200:
-   *        description: Get all tasks
+   *        description: Get all tasks.
    *        content:
    *          application/json:
    *            schema:
@@ -510,7 +510,7 @@ export const appRouter = ({
    *                message:
    *                  type: string
    *      400:
-   *        description: Bad Request
+   *        description: Bad Request.
    *      401:
    *        description: Unauthorized.
    *      404:
@@ -525,7 +525,7 @@ export const appRouter = ({
    * @swagger
    * /dashboard:
    *  get:
-   *    summary: Get dashboard by email
+   *    summary: Get dashboard by email.
    *    description: Only if session exist.
    *    tags: [Dashboard]
    *    security:
@@ -534,7 +534,7 @@ export const appRouter = ({
    *      - application.json
    *    responses:
    *      200:
-   *        description: Response with an array
+   *        description: Response with an array.
    *        content:
    *          application/json:
    *            schema:
@@ -542,7 +542,7 @@ export const appRouter = ({
    *              items:
    *                $ref: '#/components/schemas/Dashboard'
    *      401:
-   *        description: Unauthorized
+   *        description: Unauthorized.
    *      404:
    *        description: User does not exists.
    *      500:
@@ -553,7 +553,7 @@ export const appRouter = ({
    * @swagger
    * /dashboard:
    *  put:
-   *    summary: Create a new dashboard
+   *    summary: Create a new dashboard.
    *    tags: [Dashboard]
    *    security:
    *      - cookieAuth: []
@@ -567,26 +567,26 @@ export const appRouter = ({
    *            $ref: '#/components/DashboardEditable'
    *    responses:
    *      201:
-   *        description: Response with the new dashboard
+   *        description: Response with the new dashboard.
    *        content:
    *          application/json:
    *            schema:
    *              $ref: '#/components/schemas/Dashboard'
    *      400:
-   *        description: Bad Request
+   *        description: Bad Request.
    *      401:
-   *        description: Unauthorized
+   *        description: Unauthorized.
    *      404:
-   *        description: Not Found
+   *        description: Not Found.
    *      500:
-   *        description: Internal Server Error
+   *        description: Internal Server Error.
    */
   router.put("/dashboard", jwtMiddleware, dashboardController.create);
   /**
    * @swagger
    * /dashboard:
    *  patch:
-   *    summary: Update a dashboard
+   *    summary: Update a dashboard.
    *    tags: [Dashboard]
    *    security:
    *      - cookieAuth: []
@@ -600,26 +600,26 @@ export const appRouter = ({
    *            $ref: '#/components/DashboardEditable'
    *    responses:
    *      201:
-   *        description: Response with the updated dashboard
+   *        description: Response with the updated dashboard.
    *        content:
    *          application/json:
    *            schema:
    *              $ref: '#/components/schemas/Dashboard'
    *      400:
-   *        description: Bad Request
+   *        description: Bad Request.
    *      401:
-   *        description: Unauthorized
+   *        description: Unauthorized.
    *      404:
-   *        description: Not Found
+   *        description: Not Found.
    *      500:
-   *        description: Internal Server Error
+   *        description: Internal Server Error.
    */
   router.patch("/dashboard", jwtMiddleware, dashboardController.update);
   /**
    * @swagger
    * /dashboard:
    *  delete:
-   *    summary: Delete a dashboard
+   *    summary: Delete a dashboard.
    *    tags: [Dashboard]
    *    security:
    *      - cookieAuth: []
@@ -642,20 +642,141 @@ export const appRouter = ({
    *                message:
    *                  type: string
    *      400:
-   *        description: Bad Request
+   *        description: Bad Request.
    *      401:
-   *        description: Unauthorized
+   *        description: Unauthorized.
    *      404:
-   *        description: Not Found
+   *        description: Not Found.
    *      500:
-   *        description: Internal Server Error
+   *        description: Internal Server Error.
    */
   router.delete("/dashboard", jwtMiddleware, dashboardController.delete);
 
   // Team
+  /**
+   * @swagger
+   * /team:
+   *  get:
+   *    summary: Get me team.
+   *    tags: [Team]
+   *    security:
+   *      - cookieAuth: []
+   *    produces:
+   *      - application/json
+   *    responses:
+   *      200:
+   *        description: Get all my team.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: array
+   *              items:
+   *                $ref: '#/components/schemas/Team'
+   *      500:
+   *        description: Internal Server Error.
+   */
   router.get("/team", jwtMiddleware, teamController.getTeam);
+  /**
+   * @swagger
+   * /team:
+   *  post:
+   *    summary: Create a team.
+   *    tags: [Team]
+   *    security:
+   *      - cookieAuth: []
+   *    produces:
+   *      - application/json
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/TeamEditable'
+   *    responses:
+   *      201:
+   *        description: Response with the new team.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/Team'
+   *      400:
+   *        description: Bad Request.
+   *      404:
+   *        description: Not Found.
+   *      500:
+   *        description: Internal Server Error.
+   *
+   */
   router.post("/team", jwtMiddleware, teamController.create);
+  /**
+   * @swagger
+   * /team:
+   *  patch:
+   *    summary: Update a team.
+   *    tags: [Team]
+   *    security:
+   *      - cookieAuth: []
+   *    produces:
+   *      - application/json
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/TeamEditable'
+   *    responses:
+   *      201:
+   *        description: Response with the updated team.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/Team'
+   *      400:
+   *        description: Bad Request.
+   *      401:
+   *        description: Unauthorized.
+   *      404:
+   *        description: Not Found.
+   *      500:
+   *        description: Internal Server Error.
+   *
+   */
   router.patch("/team", jwtMiddleware, teamController.update);
+  /**
+   * @swagger
+   * /team:
+   *  delete:
+   *    summary: Delete a team.
+   *    tags: [Team]
+   *    security:
+   *      - cookieAuth: []
+   *    produces:
+   *      - application/json
+   *    parameters:
+   *      - in: query
+   *        required: true
+   *        name: id
+   *        schema:
+   *          type: integer
+   *    responses:
+   *      200:
+   *        description: Confirm delete.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                message:
+   *                  type: string
+   *      400:
+   *        description: Bad Request.
+   *      401:
+   *        description: Unauthorized.
+   *      404:
+   *        description: Not Found.
+   *      500:
+   *        description: Internal Server Error.
+   */
   router.delete("/team", jwtMiddleware, teamController.delete);
 
   router.get("/verify", userController.verifyEmail);
