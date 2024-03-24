@@ -6,6 +6,7 @@ import { cat } from "../utils/httpcat.mjs";
 import { JwtToken } from "../utils/jwtToken.mjs";
 import { logHelper } from "../utils/log-helper.mjs";
 import { sendMail } from "../config/mailgun.conf.mjs";
+import { getHost } from "../utils/get-host.mjs";
 
 const SECRET = process.env.SECRET;
 const JWT_SECRET = process.env.JWT;
@@ -47,7 +48,12 @@ export class AuthController {
 
     const newUser = { ...parse.data, token_email };
 
-    sendMail(parse.data.email, token_email);
+    const host = getHost(req.rawHeaders);
+    const baseUrl = req.protocol + "://" + host;
+    if (host) {
+      sendMail(baseUrl, parse.data.email, token_email);
+    }
+
     try {
       const session = await this.userModel.createUser(newUser);
 

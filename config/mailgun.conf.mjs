@@ -2,8 +2,6 @@ import "dotenv/config";
 import formData from "form-data";
 import mailgun from "mailgun.js";
 
-const URL = process.env.URL_BASE;
-const PORT = process.env.PORT;
 const VERSION = process.env.API_VERSION;
 const API_KEY = process.env.MAILGUN_API_KEY;
 const DOMAIN = process.env.MAILGUN_DOMAIN;
@@ -19,19 +17,20 @@ const mg = clint.client({
 
 /**
  * Send Email
+ * @param {string} url
  * @param {string} email
  * @param {string} token
  */
-export function sendMail(email, token) {
+export function sendMail(url, email, token) {
   mg.messages
     .create(DOMAIN, {
       from: FROM,
       to: [DESTINATION_DEV],
-      subject: "Hello Dev!",
+      subject: "Confirm your account!",
       text: "Testing some Mailgun awesomeness!. ",
       html: `<main style="height: 100vh;display: flex;font-family: &quot;system-ui&quot;, sans-serif;flex-direction: column;align-items: center;justify-content: center;">
       <h1>Testing some Mailgun awesomeness!</h1>
-  <p>Para confirmar su correo ${email} haga <a href='${URL}:${PORT}/api/${VERSION}/verify?token=${token}' rel='noopener noreferrer'>click aquí</a></p>
+  <p>Para confirmar su correo ${email} haga <a href='${url}/api/${VERSION}/verify?token=${token}' rel='noopener noreferrer'>click aquí</a></p>
   </main>`,
     })
     .then((msg) => console.log(msg)) // logs response data
