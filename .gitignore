@@ -4,4 +4,4 @@ pnpm-lock.yaml
 dev.db
 .env*
 
-playground.js
+playground.*
