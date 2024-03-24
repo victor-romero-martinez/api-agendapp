@@ -3,3 +3,5 @@ models/sqlite/dev.db
 pnpm-lock.yaml
 dev.db
 .env*
+
+playground.js
